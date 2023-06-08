@@ -1,0 +1,62 @@
+﻿@page "/"
+
+@using Fluxor;
+@using MudBlazor
+@using ShopWebsite.Client.Features.Basket.Store.Actions;
+@using ShopWebsite.Client.Features.Products.Store.Actions;
+@using ShopWebsite.Client.Features.Products.Store;
+@using ShopWebsite.Shared;
+
+@inject HttpClient Http;
+@inject IDispatcher Dispatcher;
+@inject IState<ProductsState> ProductsState;
+
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
+
+<div class="container">
+	<h1>Products</h1>
+
+	@if (@ProductsState.Value.IsLoading)
+	{
+		<p><em>Loading...</em></p>
+	}
+	else
+	{
+		<MudGrid>
+			@foreach (var product in @ProductsState.Value.Products)
+			{
+				<MudItem>
+					<MudPaper Class="pa-4">
+						<MudStack Spacing="4">
+							<MudText>@product.Name</MudText>
+							<MudText>£@product.Cost</MudText>
+							<MudText>@product.Quantity</MudText>
+							<MudButton 
+								Variant="Variant.Filled" 
+								Color="Color.Primary" 
+								DisableElevation="true" 
+								@onclick="_ => AddToBasket(product)">
+									Add to Basket
+							</MudButton>
+						</MudStack>
+					</MudPaper>
+				</MudItem>
+			}
+		</MudGrid>
+	}
+</div>
+
+@code {
+	protected override void OnInitialized()
+	{
+		base.OnInitialized();
+		Dispatcher.Dispatch(new FetchProductsAction());
+	}
+
+	private void AddToBasket(ProductDto product)
+	{
+		ProductDto productToAdd = product with { Quantity = 1 };
+		Dispatcher.Dispatch(new AddToCurrentBasketRequestAction(productToAdd));
+	}
+}

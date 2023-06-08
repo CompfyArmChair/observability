@@ -1,0 +1,114 @@
+﻿@using Fluxor;
+@using Microsoft.AspNetCore.SignalR.Client;
+@using ShopWebsite.Client.Features.Basket.Store;
+@using MudBlazor;
+@using ShopWebsite.Client.Features.Basket.Store.Actions;
+@using ShopWebsite.Shared;
+@using System.Diagnostics;
+
+@inject HttpClient Http;
+@inject NavigationManager NavManager;
+@inject IDispatcher Dispatcher;
+@inject IState<BasketState> BasketState;
+
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+@implements IAsyncDisposable
+
+<MudToggleIconButton @bind-Toggled="@_isOpen"
+					 Icon="@Icons.Material.Filled.ShoppingCart"
+					 Color="@Color.Secondary"
+					 ToggledIcon="@Icons.Material.Outlined.ShoppingCart"
+					 ToggledColor="@Color.Secondary" />
+
+<MudChip Color="@Color.Secondary">
+	@BasketState.Value.Products.Sum(x => x.Quantity)
+</MudChip>
+
+
+<MudPopover Open="@_isOpen" Fixed="true" Class="px-4 pt-4">
+	<div class="d-flex flex-column">
+		<MudButton OnClick="@ToggleOpen" Class="ml-auto mr-n3 mb-1" Color="Color.Error">Close</MudButton>
+		@if (@BasketState.Value.IsLoading)
+		{
+			<MudText>Loading...</MudText>
+		}
+		else if (!@BasketState.Value.Products.Any())
+		{
+			<MudText>Your basket is empty.</MudText>
+		}
+		else
+		{
+			@foreach (var product in @BasketState.Value.Products)
+			{
+				<MudStack>
+					<MudText>@product.Name</MudText>
+					<MudText>@product.Cost</MudText>
+					<MudText>@product.Quantity</MudText>
+					<MudButton Variant="Variant.Filled"
+					   Color="Color.Primary"
+					   DisableElevation="true" @onclick="_ => RemoveFromBasket(product)">
+						Remove
+					</MudButton>
+				</MudStack>
+			}
+
+			<button class="btn btn-success" @onclick="Checkout">Checkout</button>
+		}
+	</div>
+</MudPopover>
+@code {
+
+	public bool _isOpen;
+	private HubConnection? _hubConnection;
+
+	public void ToggleOpen()
+	{
+		if (_isOpen)
+			_isOpen = false;
+		else
+		{
+			_isOpen = true;
+		}
+	}
+
+	protected override async Task OnInitializedAsync()
+	{
+		await base.OnInitializedAsync();
+
+		Dispatcher.Dispatch(new FetchBasketAction(BasketState.Value.BasketId));
+
+		_hubConnection = new HubConnectionBuilder()
+			.WithUrl(NavManager.ToAbsoluteUri("/shophub"))
+			.Build();
+
+		_hubConnection.On<int>("BasketChanged", (basketId) =>
+		{
+			Console.WriteLine($"BasketChanged: {basketId}");
+			Dispatcher.Dispatch(new FetchBasketAction(basketId));
+		});
+
+		await _hubConnection.StartAsync();
+		Console.WriteLine($"Hubstate: {_hubConnection.State}");
+	}
+
+
+	private async Task RemoveFromBasket(ProductDto product)
+	{
+		//await Http.PostAsJsonAsync("api/Basket/Remove", product);
+		//basket.Remove(product);
+	}
+
+	private void Checkout()
+	{
+		_isOpen = false;
+		NavManager.NavigateTo("/checkout");
+	}
+
+	public async ValueTask DisposeAsync()
+	{
+		if (_hubConnection is not null)
+		{
+			await _hubConnection.DisposeAsync();
+		}
+	}
+}

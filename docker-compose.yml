@@ -1,0 +1,85 @@
+version: "3.9"
+services:
+
+  sql-server-db:
+    container_name: sqlserver
+    image: mcr.microsoft.com/mssql/server:latest
+    ports:
+        - "1433:1433"
+    environment:
+      SA_PASSWORD: "Password1234!"
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: Express
+    volumes:
+        - sqlvolume:/var/opt/mssql
+    networks:
+        - shared-network
+
+  shopWebsite:
+    image: shop-image
+    build:
+      context: .
+      dockerfile: /websites/Dockerfile
+    depends_on: 
+        - sql-server-db
+    ports:
+        - 6081:80        
+    networks:
+        - shared-network
+
+  catalogueApi:
+    image: catalogue-image
+    build:
+      context: .
+      dockerfile: /APIS/CatalogueApi/Dockerfile
+    depends_on: 
+        - sql-server-db
+    ports:
+        - 6082:80        
+    networks:
+        - shared-network
+
+  salesApi:
+    image: sales-image
+    build:
+      context: .
+      dockerfile: /APIS/SalesApi/Dockerfile
+    depends_on: 
+        - sql-server-db
+    ports:
+        - 6083:80        
+    networks:
+        - shared-network
+
+  warehouseApi:
+    image: warehouse-image
+    build:
+      context: .
+      dockerfile: /APIS/WarehouseApi/Dockerfile
+    depends_on: 
+        - sql-server-db
+    ports:
+        - 6084:80
+    networks:
+        - shared-network
+ 
+  basketApi:
+    image: basket-image
+    build:
+      context: .
+      dockerfile: /APIS/BasketApi/Dockerfile
+    depends_on: 
+        - sql-server-db
+    ports:
+        - 6085:80
+    networks:
+        - shared-network
+ 
+# ... volumes section
+volumes:
+  sqlvolume:
+    driver: local    
+
+networks:
+  shared-network:
+    driver: bridge

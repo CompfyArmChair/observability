@@ -1,0 +1,125 @@
+﻿@page "/checkout";
+
+@using Fluxor;
+@using MudBlazor;
+@using ShopWebsite.Client.Features.Basket.Store;
+@using ShopWebsite.Client.Features.Checkout.Store.Actions;
+@using ShopWebsite.Shared;
+
+@inject HttpClient Http;
+@inject NavigationManager NavManager;
+@inject IDispatcher Dispatcher;
+@inject IState<BasketState> BasketState;
+
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent;
+
+<MudText Typo="Typo.h3" Align="Align.Center" GutterBottom="true">Checkout</MudText>
+<MudGrid Spacing="6" Class="mt-16">
+	<MudItem xs="7">
+		<MudGrid Spacing="6">
+			<MudItem>
+				<MudText Typo="Typo.h5" GutterBottom="true">Billing address</MudText>
+				<MudGrid>
+					<MudItem xs="12">
+						<MudTextField T="string" Label="Email" @bind-Value="Email" />
+					</MudItem>
+					<MudItem xs="6">
+						<MudTextField T="string" Label="First name" @bind-Value="FirstName" />
+					</MudItem>
+					<MudItem xs="6">
+						<MudTextField T="string" Label="Last name" @bind-Value="LastName" />
+					</MudItem>
+					<MudItem xs="12">
+						<MudTextField T="string" Label="Address" @bind-Value="Address" />
+					</MudItem>
+				</MudGrid>
+			</MudItem>
+			<MudItem>
+				<MudText Typo="Typo.h5" GutterBottom="true">Payment Info</MudText>
+				<MudGrid>
+					<MudItem xs="12">
+						<MudTextField Mask="@(new PatternMask("0000 0000 0000 0000"))" Label="Credit Card Number"
+									  @bind-Value="CreditCard" Variant="@Variant.Text" Clearable />
+					</MudItem>
+					<MudItem xs="2">
+						<MudTextField Mask="@(new DateMask("MM/YY", 'Y', 'M'))" Label="Expires"
+									  @bind-Value="Expiration" Variant="@Variant.Text" />
+					</MudItem>					
+					<MudItem xs="2">
+						<MudTextField Mask="@(new PatternMask("000"))" Label="CVC"
+									  @bind-Value="Cvc" Variant="@Variant.Text" />
+					</MudItem>
+					<MudItem xs="12" Class="d-flex justify-center">
+						<MudButton Variant="Variant.Filled" DisableElevation="true" Color="Color.Primary" Size="Size.Large" Class="mt-8">Purchase</MudButton>
+					</MudItem>
+				</MudGrid>
+			</MudItem>
+		</MudGrid>
+	</MudItem>
+	<MudItem xs="5">
+		<MudText Typo="Typo.h5" GutterBottom="true">Cart</MudText>
+		<MudPaper Class="d-flex flex-column" Style="height:100%;" Outlined="true">
+			@if (@BasketState.Value.IsLoading)
+			{
+				<MudText>Loading...</MudText>
+			}
+			else if (!@BasketState.Value.Products.Any())
+			{
+				<MudText>Your basket is empty.</MudText>
+			}
+			else
+			{
+				@foreach (var product in @BasketState.Value.Products)
+				{
+					<MudList>
+						<MudListItem Icon="@Icons.Material.Filled.Computer">
+							<div class="d-flex">
+								<MudText>@product.Quantity</MudText>
+								<MudText Inline="true">@product.Name</MudText>
+								<MudText Inline="true" Class="ml-auto">£@product.Cost</MudText>
+							</div>
+						</MudListItem>
+					</MudList>
+				}
+				<div class="mt-auto">
+					<MudDivider />
+					<div class="d-flex pa-4">
+						<MudText>Total:</MudText>
+						<MudText Class="ml-auto"><b>£@TotalCost</b></MudText>
+					</div>
+				</div>
+			}
+		</MudPaper>
+	</MudItem>
+</MudGrid>
+
+@code {
+	public string Email { get; set; } = string.Empty;
+	public string FirstName { get; set; } = string.Empty;
+	public string LastName { get; set; } = string.Empty;
+	public string Address { get; set; } = string.Empty;
+
+	public string Expiration { get; set; } = string.Empty;
+	public string CreditCard { get; set; } = string.Empty;
+	public string Cvc { get; set; } = string.Empty;
+
+	public decimal TotalCost => BasketState.Value.Products.Sum(x => x.Quantity * x.Cost);
+
+	private void Purchase()
+	{
+		var purchaseDto = new PurchaseDto(
+			Email, 
+			FirstName, 
+			LastName, 
+			Address, 
+			Expiration, 
+			CreditCard, 
+			Cvc,
+			new BasketDto(
+				BasketState.Value.BasketId,
+				BasketState.Value.Products.ToArray()
+			));
+
+		Dispatcher.Dispatch(new CheckoutRequestAction(purchaseDto));
+	}
+}
