@@ -12,7 +12,6 @@ namespace ShopWebsite.Server.Controllers
 	{
 		private readonly HttpClient _httpClient;
 		private readonly ISendEndpointProvider _sendEndpointProvider;
-		private readonly string _purchaseApiBaseUrl = "http://purchaseApi";
 		private readonly IMapper _mapper;
 
 		public PurchaseController(HttpClient httpClient, ISendEndpointProvider sendEndpointProvider)
@@ -22,6 +21,9 @@ namespace ShopWebsite.Server.Controllers
 
 			var configuration = new MapperConfiguration(cfg =>
 			{
+				cfg.CreateMap<ProductDto, ProductCommandDto>();
+				cfg.CreateMap<BasketDto, BasketCommandDto>()
+				   .ForMember(dest => dest.Products, opt => opt.MapFrom(src => src.Products));
 				cfg.CreateMap<PurchaseDto, MakePurchaseCommand>();
 			});
 

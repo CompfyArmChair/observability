@@ -1,6 +1,7 @@
 ﻿using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Shared.ServiceBus.Commands;
+using Shared.ServiceBus.Events;
 using WarehouseApi.Data;
 using WarehouseApi.Data.Models;
 using WarehouseApi.Enums;
@@ -45,6 +46,10 @@ public class ReserveStockCommandConsumer : IConsumer<ReserveStockCommand>
 
 		results.ForEach(x => x.Status = Status.Ordered);
 
-		await _dbContext.SaveChangesAsync();		
+		await _dbContext.SaveChangesAsync();
+
+		await Task.WhenAll(
+			context.Send(new CompleteCustomerBillingCommand() { OrderId = message.OrderId }),
+			context.Send(new CompleteCustomerBillingCommand() { OrderId = message.OrderId }));
 	}
 }

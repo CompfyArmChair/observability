@@ -2,22 +2,27 @@
 
 public class MakePurchaseCommand
 {
-	public string Email { get; set; }
-	public string FirstName { get; set; }
-	public string LastName { get; set; }
-	public string Address { get; set; }
-	public string Expiration { get; set; }
-	public string Creditcard { get; set; }
-	public string Cvc { get; set; }
-	public BasketCommandDto Basket { get; set; }
+	public string Email { get; set; } = string.Empty;
+	public string FirstName { get; set; } = string.Empty;
+	public string LastName { get; set; } = string.Empty;
+	public string Address { get; set; } = string.Empty;
+	public string Expiration { get; set; } = string.Empty;
+	public string Creditcard { get; set; } = string.Empty;
+	public string Cvc { get; set; } = string.Empty;
+	public BasketCommandDto Basket { get; set; } = default!;
 }
 
-public record BasketCommandDto(
-	int BasketId,
-	ProductCommandDto[] Products);
+public class BasketCommandDto
+{
+	public int BasketId { get;set; }
+	public ProductCommandDto[] Products { get; set; } = Array.Empty<ProductCommandDto>();
 
-public record ProductCommandDto(
-	string Sku,
-	string Name,
-	decimal Cost,
-	int Quantity);
+}
+
+public class ProductCommandDto
+{
+	public string Sku { get; set; } = string.Empty;
+	public string Name { get; set; } = string.Empty;
+	public decimal Cost { get; set; }
+	public int Quantity { get; set; }
+}

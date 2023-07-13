@@ -2,6 +2,7 @@
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Shared.ServiceBus.Commands;
+using Shared.ServiceBus.Events;
 
 namespace BasketApi.CommandConsumers;
 
@@ -28,5 +29,7 @@ public class ClearBasketCommandConsumer : IConsumer<ClearBasketCommand>
 			.Remove(basket);
 
 		await _dbContext.SaveChangesAsync();
+
+		await context.Publish(new BasketChangedEvent() { BasketId = message.BasketId });
 	}
 }

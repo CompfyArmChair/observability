@@ -12,10 +12,13 @@ COPY ["Shared/Shared.ServiceBus.csproj", "Shared/"]
 WORKDIR "/src/API/BasketApi/"
 COPY APIs/BasketApi/ .
 COPY Shared/ .
-RUN dotnet build "BasketApi.csproj" -c Release -o /app/build
+
+RUN dotnet restore "BasketApi.csproj" --disable-parallel
+
+RUN dotnet build "BasketApi.csproj" -c Release -o /app/build --no-restore
 
 FROM build AS publish
-RUN dotnet publish "BasketApi.csproj" -c Release -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "BasketApi.csproj" -c Release -o /app/publish /p:UseAppHost=false --no-restore
 
 FROM base AS final
 WORKDIR /app

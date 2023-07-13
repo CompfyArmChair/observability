@@ -50,7 +50,7 @@ public class AddToBasketRequest
     public int BasketId { get; set; }
 
     [FromBody]
-    public ProductDto Product { get; set; }
+    public ProductDto Product { get; set; } = default!;
 }
 
 public class AddToBasketBasketMapper : Mapper<AddToBasketRequest, EmptyResponse, ProductEntity>

@@ -65,5 +65,5 @@ public class ProductsController : ControllerBase
 
 public class ProductResponse
 {
-	public ProductDto[] Products { get; set; }
+	public ProductDto[] Products { get; set; } = default!;
 }

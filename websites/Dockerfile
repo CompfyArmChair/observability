@@ -16,10 +16,13 @@ COPY websites/ShopWebsite/Shared/ .
 WORKDIR "/src/website/ShopWebsite/Server/"
 COPY websites/ShopWebsite/Server/ .
 COPY Shared/ .
-RUN dotnet build "ShopWebsite.Server.csproj" -c Release -o /app/build
+
+RUN dotnet restore "ShopWebsite.Server.csproj" --disable-parallel
+
+RUN dotnet build "ShopWebsite.Server.csproj" -c Release -o /app/build --no-restore
 
 FROM build AS publish
-RUN dotnet publish  "ShopWebsite.Server.csproj" -c Release -o /app/publish
+RUN dotnet publish  "ShopWebsite.Server.csproj" -c Release -o /app/publish --no-restore
 
 FROM base AS final
 WORKDIR /app

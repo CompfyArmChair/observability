@@ -24,7 +24,7 @@ namespace ShopWebsite.Server.Controllers
         {
 			var response = await _httpClient.GetAsync($"{_basketApiBaseUrl}/Basket/{id}");
 			var basketResponse = await response.Content.ReadFromJsonAsync<GetBasketResponse>();            
-			return Ok(basketResponse.Basket);
+			return Ok(basketResponse!.Basket);
         }
 
         [HttpPost("{BasketId}/Product")]
@@ -54,7 +54,7 @@ namespace ShopWebsite.Server.Controllers
 
 public class GetBasketResponse
 {
-	public BasketDto Basket{ get; set; }
+    public BasketDto Basket { get; set; } = default!;
 }
 
 

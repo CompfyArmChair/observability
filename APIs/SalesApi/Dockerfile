@@ -12,10 +12,13 @@ COPY ["Shared/Shared.ServiceBus.csproj", "Shared/"]
 WORKDIR "/src/API/SalesApi/"
 COPY APIs/SalesApi/ .
 COPY Shared/ .
-RUN dotnet build "SalesApi.csproj" -c Release -o /app/build
+
+RUN dotnet restore "SalesApi.csproj" --disable-parallel
+
+RUN dotnet build "SalesApi.csproj" -c Release -o /app/build --no-restore
 
 FROM build AS publish
-RUN dotnet publish "SalesApi.csproj" -c Release -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "SalesApi.csproj" -c Release -o /app/publish /p:UseAppHost=false --no-restore
 
 FROM base AS final
 WORKDIR /app

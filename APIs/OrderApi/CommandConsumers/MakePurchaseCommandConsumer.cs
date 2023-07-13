@@ -3,7 +3,6 @@ using OrderApi.Data;
 using OrderApi.Data.Models;
 using OrderApi.Enums;
 using Shared.ServiceBus.Commands;
-using Shared.ServiceBus.Events;
 
 namespace BasketApi.CommandConsumers;
 
@@ -46,6 +45,14 @@ public class MakePurchaseCommandConsumer : IConsumer<MakePurchaseCommand>
 		await _dbContext.SaveChangesAsync();
 
 		await Task.WhenAll(
+			context.Send(new SendMailCommand() 
+			{ 
+				Firstname = message.FirstName,
+				Lastname = message.LastName,
+				Email = message.Email,
+				Subject = "Order Recieved",
+				Body = $"Hello {message.FirstName}, your order has been recieved"
+			}),
 			context.Send(new ClearBasketCommand() { BasketId = message.Basket.BasketId }),
 			context.Send(new ReserveStockCommand() 
 			{
@@ -70,7 +77,6 @@ public class MakePurchaseCommandConsumer : IConsumer<MakePurchaseCommand>
 				Cvc = message.Cvc,
 				Expiration = message.Expiration,
 				TotalCost = message.Basket.Products.Sum(x => x.Cost)
-			}),
-			context.Send(new BasketChangedEvent() { BasketId = message.Basket.BasketId }));
+			}));
 	}
 }

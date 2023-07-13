@@ -26,6 +26,6 @@ public class Effects
 	{		
 		var basket = await _httpClient.GetFromJsonAsync<BasketDto>($"api/Basket/{action.BasketId}");
 
-		dispatcher.Dispatch(new FetchBasketResultAction(basket));
+		dispatcher.Dispatch(new FetchBasketResultAction(basket!));
 	}
 }

@@ -47,11 +47,6 @@ public class AddProductToBasketCommandConsumer : IConsumer<AddProductToBasketCom
 
 		await _dbContext.SaveChangesAsync();
 
-		await NotifySuccess(context, basket);
-	}
-
-	private static async Task NotifySuccess(ConsumeContext<AddProductToBasketCommand> context, BasketEntity basket)
-	{
-		await context.Publish(new BasketChangedEvent() { BasketId = basket.Id });			
+		await context.Publish(new BasketChangedEvent() { BasketId = basket.Id });
 	}
 }

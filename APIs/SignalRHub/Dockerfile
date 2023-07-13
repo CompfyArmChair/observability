@@ -10,10 +10,13 @@ COPY ["APIs/SignalRHub/SignalRHub.csproj", "APIs/SignalRHub/"]
 RUN dotnet restore "APIs/SignalRHub/SignalRHub.csproj"
 COPY . .
 WORKDIR "/src/APIs/SignalRHub"
-RUN dotnet build "SignalRHub.csproj" -c Release -o /app/build
+
+RUN dotnet restore "SignalRHub.csproj" --disable-parallel
+
+RUN dotnet build "SignalRHub.csproj" -c Release -o /app/build --no-restore
 
 FROM build AS publish
-RUN dotnet publish "SignalRHub.csproj" -c Release -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "SignalRHub.csproj" -c Release -o /app/publish /p:UseAppHost=false --no-restore
 
 FROM base AS final
 WORKDIR /app

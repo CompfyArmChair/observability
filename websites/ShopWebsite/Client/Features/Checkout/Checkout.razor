@@ -50,7 +50,13 @@
 									  @bind-Value="Cvc" Variant="@Variant.Text" />
 					</MudItem>
 					<MudItem xs="12" Class="d-flex justify-center">
-						<MudButton Variant="Variant.Filled" DisableElevation="true" Color="Color.Primary" Size="Size.Large" Class="mt-8">Purchase</MudButton>
+						<MudButton 
+							Variant="Variant.Filled" 
+							DisableElevation="true" 
+							Color="Color.Primary" 
+							Size="Size.Large" 
+							Class="mt-8"
+							@onclick="Purchase">Purchase</MudButton>
 					</MudItem>
 				</MudGrid>
 			</MudItem>

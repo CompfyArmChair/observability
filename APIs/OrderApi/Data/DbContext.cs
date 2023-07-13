@@ -21,15 +21,15 @@ public class OrderDbContext : DbContext
 			.ToTable("products", schema: "order");
 
 		modelBuilder.Entity<ProductEntity>()
-			.Property(e => e.)
+			.Property(e => e.Cost)
 			.HasColumnType("money");
 
-		modelBuilder.Entity<BasketEntity>()
-			.HasMany(b => b.Products)
-			.WithOne();
+		//modelBuilder.Entity<BasketEntity>()
+		//	.HasMany(b => b.Products)
+		//	.WithOne();
 
-		modelBuilder.Entity<BasketEntity>()
-			.Navigation(b => b.Products)
-			.UsePropertyAccessMode(PropertyAccessMode.Property);
+		//modelBuilder.Entity<BasketEntity>()
+		//	.Navigation(b => b.Products)
+		//	.UsePropertyAccessMode(PropertyAccessMode.Property);
 	}
 }

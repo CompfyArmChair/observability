@@ -9,5 +9,15 @@ public class BillingDbContext : DbContext
     {
     }
 
-    public DbSet<PurchaseEntity> Purchases { get; set; }        
+    public DbSet<PurchaseEntity> Purchases { get; set; }
+
+	protected override void OnModelCreating(ModelBuilder modelBuilder)
+	{
+		modelBuilder.Entity<PurchaseEntity>()
+			.ToTable("purchases", schema: "billing");
+
+		modelBuilder.Entity<PurchaseEntity>()
+			.Property(e => e.TotalCost)
+			.HasColumnType("money");
+	}
 }

@@ -23,8 +23,8 @@ public class GetAllShippingEndpoint : Endpoint<EmptyRequest, Response, ShippingM
     public async override Task HandleAsync(EmptyRequest req, CancellationToken ct)
     {
         var shippings = await _dbContext
-            .Shippings
-            .ToArrayAsync() ?? Array.Empty<ShippingEntity>();
+            .Shipments            
+            .ToArrayAsync() ?? Array.Empty<ShipmentEntity>();
 
         var response = Map.FromEntity(shippings);
 
@@ -37,15 +37,15 @@ public class Response
     public ShippingDto[] Shippings { get; set; } = Array.Empty<ShippingDto>();
 }
 
-public class ShippingMapper : Mapper<EmptyRequest, Response, IEnumerable<ShippingEntity>>
+public class ShippingMapper : Mapper<EmptyRequest, Response, IEnumerable<ShipmentEntity>>
 {
     private readonly AutoMapper.IMapper _mapper;
     public ShippingMapper()
     {
         var configuration = new MapperConfiguration(cfg =>
         {
-            cfg.CreateMap<ShippingEntity, ShippingDto>();
-            cfg.CreateMap<IEnumerable<ShippingEntity>, Response>()
+            cfg.CreateMap<ShipmentEntity, ShippingDto>();
+            cfg.CreateMap<IEnumerable<ShipmentEntity>, Response>()
                 .ForMember(dest => dest.Shippings,
                            opt => opt.MapFrom(src => src));
         });
@@ -53,7 +53,7 @@ public class ShippingMapper : Mapper<EmptyRequest, Response, IEnumerable<Shippin
         _mapper = configuration.CreateMapper();
     }
 
-    public override Response FromEntity(IEnumerable<ShippingEntity> shippingEntities) =>
+    public override Response FromEntity(IEnumerable<ShipmentEntity> shippingEntities) =>
         _mapper.Map<Response>(shippingEntities);
 }
 

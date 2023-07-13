@@ -9,5 +9,5 @@ public class ShippingDbContext : DbContext
     {
     }
 
-    public DbSet<ShippingEntity> Shippings { get; set; }        
+    public DbSet<ShipmentEntity> Shipments { get; set; }        
 }

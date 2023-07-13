@@ -74,8 +74,49 @@ services:
         - 6085:80
     networks:
         - shared-network
+
+  billingApi:
+    image: billing-image
+    build:
+      context: .
+      dockerfile: /APIS/BillingApi/Dockerfile
+    depends_on: 
+        - sql-server-db
+    ports:
+        - 6086:80
+    networks:
+        - shared-network
+
+  shippingApi:
+    image: shipping-image
+    build:
+      context: .
+      dockerfile: /APIS/ShippingApi/Dockerfile
+    depends_on: 
+        - sql-server-db
+    ports:
+        - 6087:80
+    networks:
+        - shared-network
  
-# ... volumes section
+  emailApi:
+    image: email-image
+    build:
+      context: .
+      dockerfile: /APIS/EmailApi/Dockerfile
+    ports:
+        - 6088:80
+    networks:
+        - shared-network
+ 
+  smtp4dev:
+    image: rnwood/smtp4dev
+    ports:
+        - 3000:80
+        - 2525:25
+    networks:
+        - shared-network
+ 
 volumes:
   sqlvolume:
     driver: local    

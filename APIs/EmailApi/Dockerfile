@@ -7,17 +7,20 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
-COPY ["APIs/ShippingApi/ShippingApi.csproj", "API/ShippingApi/"]
+COPY ["APIs/EmailApi/EmailApi.csproj", "API/EmailApi/"]
 COPY ["Shared/Shared.ServiceBus.csproj", "Shared/"]
-WORKDIR "/src/API/ShippingApi/"
-COPY APIs/ShippingApi/ .
+WORKDIR "/src/API/EmailApi/"
+COPY APIs/EmailApi/ .
 COPY Shared/ .
-RUN dotnet build "ShippingApi.csproj" -c Release -o /app/build
+
+RUN dotnet restore "EmailApi.csproj" --disable-parallel
+
+RUN dotnet build "EmailApi.csproj" -c Release -o /app/build --no-restore
 
 FROM build AS publish
-RUN dotnet publish "ShippingApi.csproj" -c Release -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "EmailApi.csproj" -c Release -o /app/publish /p:UseAppHost=false --no-restore
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "ShippingApi.dll"]
+ENTRYPOINT ["dotnet", "EmailApi.dll"]
