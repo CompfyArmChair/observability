@@ -7,6 +7,9 @@ using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Data.SqlClient;
 using MassTransit;
 using Shared.ServiceBus;
+using Shared.Instrumentation;
+using Microsoft.ApplicationInsights.Extensibility;
+using ShippingApi;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +18,9 @@ builder.Services.AddDbContext<ShippingDbContext>(options =>
 
 builder.Services.AddMassTransit(config =>
 	config.AddDefault("ShippingApi"));
+
+builder.Services.AddInstrumentation();
+builder.Services.AddSingleton<ITelemetryInitializer, TelemetryInitializer>();
 
 builder.Services.AddSwaggerDoc();
 builder.Services.AddFastEndpoints();

@@ -12,4 +12,9 @@
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.17.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\Shared\Shared.Instrumentation\Shared.Instrumentation.csproj" />
+    <ProjectReference Include="..\..\Shared\Shared.ServiceBus\Shared.ServiceBus.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -8,10 +8,12 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
 COPY ["APIs/BasketApi/BasketApi.csproj", "API/BasketApi/"]
-COPY ["Shared/Shared.ServiceBus.csproj", "Shared/"]
+COPY ["Shared/Shared.ServiceBus/Shared.ServiceBus.csproj", "Shared/Shared.ServiceBus/"]
+COPY ["Shared/Shared.Instrumentation/Shared.Instrumentation.csproj", "Shared/Shared.Instrumentation/"]
 WORKDIR "/src/API/BasketApi/"
 COPY APIs/BasketApi/ .
-COPY Shared/ .
+COPY Shared/Shared.ServiceBus/ .
+COPY Shared/Shared.Instrumentation/ .
 
 RUN dotnet restore "BasketApi.csproj" --disable-parallel
 

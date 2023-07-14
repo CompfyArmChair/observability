@@ -7,6 +7,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
 using Shared.ServiceBus;
+using Shared.Instrumentation;
+using BasketApi;
+using Microsoft.ApplicationInsights.Extensibility;
 
 var builder = WebApplication.CreateBuilder();
 
@@ -15,6 +18,9 @@ builder.Services.AddDbContext<BasketDbContext>(options =>
 
 builder.Services.AddMassTransit(config =>
 	config.AddDefault("BasketApi"));
+
+builder.Services.AddInstrumentation();
+builder.Services.AddSingleton<ITelemetryInitializer, TelemetryInitializer>();
 
 builder.Services.AddSwaggerDoc();
 builder.Services.AddFastEndpoints();

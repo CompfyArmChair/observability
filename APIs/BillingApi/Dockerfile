@@ -8,10 +8,12 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
 COPY ["APIs/BillingApi/BillingApi.csproj", "API/BasketApi/"]
-COPY ["Shared/Shared.ServiceBus.csproj", "Shared/"]
+COPY ["Shared/Shared.ServiceBus/Shared.ServiceBus.csproj", "Shared/Shared.ServiceBus/"]
+COPY ["Shared/Shared.Instrumentation/Shared.Instrumentation.csproj", "Shared/Shared.Instrumentation/"]
 WORKDIR "/src/APIs/BillingApi/"
 COPY APIs/BillingApi/ .
-COPY Shared/ .
+COPY Shared/Shared.ServiceBus/ .
+COPY Shared/Shared.Instrumentation/ .
 
 RUN dotnet restore "BillingApi.csproj" --disable-parallel
 

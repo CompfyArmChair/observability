@@ -8,14 +8,14 @@ WORKDIR /src
 COPY ["websites/ShopWebsite/Server/ShopWebsite.Server.csproj", "website/ShopWebsite/Server/"]
 COPY ["websites/ShopWebsite/Client/ShopWebsite.Client.csproj", "website/ShopWebsite/Client/"]
 COPY ["websites/ShopWebsite/Shared/ShopWebsite.Shared.csproj", "website/ShopWebsite/Shared/"]
-COPY ["Shared/Shared.ServiceBus.csproj", "Shared/"]
+COPY ["Shared/Shared.ServiceBus/Shared.ServiceBus.csproj", "Shared/Shared.ServiceBus/"]
 WORKDIR "/src/website/ShopWebsite/Client/"
 COPY websites/ShopWebsite/Client/ .
 WORKDIR "/src/website/ShopWebsite/Shared/"
 COPY websites/ShopWebsite/Shared/ .
 WORKDIR "/src/website/ShopWebsite/Server/"
 COPY websites/ShopWebsite/Server/ .
-COPY Shared/ .
+COPY Shared/Shared.ServiceBus/ .
 
 RUN dotnet restore "ShopWebsite.Server.csproj" --disable-parallel
 

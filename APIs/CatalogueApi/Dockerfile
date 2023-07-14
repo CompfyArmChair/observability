@@ -8,10 +8,12 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
 COPY ["APIs/CatalogueApi/CatalogueApi.csproj", "API/CatalogueApi/"]
-COPY ["Shared/Shared.ServiceBus.csproj", "Shared/"]
+COPY ["Shared/Shared.ServiceBus/Shared.ServiceBus.csproj", "Shared/Shared.ServiceBus/"]
+COPY ["Shared/Shared.Instrumentation/Shared.Instrumentation.csproj", "Shared/Shared.Instrumentation/"]
 WORKDIR "/src/API/CatalogueApi/"
 COPY APIs/CatalogueApi/ .
-COPY Shared/ .
+COPY Shared/Shared.ServiceBus/ .
+COPY Shared/Shared.Instrumentation/ .
 
 RUN dotnet restore "CatalogueApi.csproj" --disable-parallel
 

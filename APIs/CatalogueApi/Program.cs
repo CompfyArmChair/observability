@@ -5,11 +5,17 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Data.SqlClient;
+using Shared.Instrumentation;
+using Microsoft.ApplicationInsights.Extensibility;
+using CatalogueApi;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<CatalogueDbContext>(options =>
   options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddInstrumentation();
+builder.Services.AddSingleton<ITelemetryInitializer, TelemetryInitializer>();
 
 builder.Services.AddSwaggerDoc();
 builder.Services.AddFastEndpoints();
