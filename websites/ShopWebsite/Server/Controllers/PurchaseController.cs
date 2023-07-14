@@ -34,7 +34,7 @@ namespace ShopWebsite.Server.Controllers
 		[HttpPost("Checkout")]
 		public async Task<IActionResult> Checkout(PurchaseDto purchase)
 		{
-			var sendEndpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri("queue:purchaseApi"));
+			var sendEndpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri("queue:orderApi"));
 
 			var command = _mapper.Map<MakePurchaseCommand>(purchase);
 

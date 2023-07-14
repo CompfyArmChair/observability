@@ -6,7 +6,7 @@ using WarehouseApi.Data;
 using WarehouseApi.Data.Models;
 using WarehouseApi.Enums;
 
-namespace BasketApi.CommandConsumers;
+namespace WarehouseApi.CommandConsumers;
 
 public class ReserveStockCommandConsumer : IConsumer<ReserveStockCommand>
 {
@@ -49,7 +49,6 @@ public class ReserveStockCommandConsumer : IConsumer<ReserveStockCommand>
 		await _dbContext.SaveChangesAsync();
 
 		await Task.WhenAll(
-			context.Send(new CompleteCustomerBillingCommand() { OrderId = message.OrderId }),
-			context.Send(new CompleteCustomerBillingCommand() { OrderId = message.OrderId }));
+			context.Send(new Uri("queue:BillingApi"), new CompleteCustomerBillingCommand() { OrderId = message.OrderId }));
 	}
 }

@@ -26,7 +26,7 @@ public class OrderShippedEventConsumer : IConsumer<OrderBilledEvent>
 			_ => throw new NotImplementedException(),
 		};
 
-		await context.Send(new SendMailCommand()
+		await context.Send(new Uri("queue:EmailApi"), new SendMailCommand()
 		{
 			Firstname = order.FirstName,
 			Lastname = order.LastName,

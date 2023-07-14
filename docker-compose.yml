@@ -98,6 +98,18 @@ services:
         - 6087:80
     networks:
         - shared-network
+
+  orderApi:
+    image: order-image
+    build:
+      context: .
+      dockerfile: /APIS/OrderApi/Dockerfile
+    depends_on: 
+    - sql-server-db
+    ports:
+    - 6088:80
+    networks:
+    - shared-network
  
   emailApi:
     image: email-image
@@ -105,7 +117,7 @@ services:
       context: .
       dockerfile: /APIS/EmailApi/Dockerfile
     ports:
-        - 6088:80
+        - 6089:80
     networks:
         - shared-network
  

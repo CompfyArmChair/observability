@@ -24,7 +24,7 @@ public class SendMailCommandConsumer : IConsumer<SendMailCommand>
 	{
 		using var client = new SmtpClient();
 
-		await client.ConnectAsync("localhost", 25, MailKit.Security.SecureSocketOptions.StartTls);
+		await client.ConnectAsync("host.docker.internal", 2525, MailKit.Security.SecureSocketOptions.None);
 
 		// await client.AuthenticateAsync("your_username", "your_password");
 		

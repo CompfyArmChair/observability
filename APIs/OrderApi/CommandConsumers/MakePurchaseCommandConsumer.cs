@@ -45,7 +45,7 @@ public class MakePurchaseCommandConsumer : IConsumer<MakePurchaseCommand>
 		await _dbContext.SaveChangesAsync();
 
 		await Task.WhenAll(
-			context.Send(new SendMailCommand() 
+			context.Send(new Uri("queue:EmailApi"), new SendMailCommand() 
 			{ 
 				Firstname = message.FirstName,
 				Lastname = message.LastName,
@@ -53,8 +53,8 @@ public class MakePurchaseCommandConsumer : IConsumer<MakePurchaseCommand>
 				Subject = "Order Recieved",
 				Body = $"Hello {message.FirstName}, your order has been recieved"
 			}),
-			context.Send(new ClearBasketCommand() { BasketId = message.Basket.BasketId }),
-			context.Send(new ReserveStockCommand() 
+			context.Send(new Uri("queue:BasketApi"), new ClearBasketCommand() { BasketId = message.Basket.BasketId }),
+			context.Send(new Uri("queue:WarehouseApi"), new ReserveStockCommand() 
 			{
 				OrderId = newPurchase.Id,
 				Stock = message.Basket.Products
@@ -66,7 +66,7 @@ public class MakePurchaseCommandConsumer : IConsumer<MakePurchaseCommand>
 						})
 					.ToArray()
 			}),
-			context.Send(new BillCustomerCommand()
+			context.Send(new Uri("queue:BillingApi"), new BillCustomerCommand()
 			{
 				OrderId = newPurchase.Id,
 				Email = message.Email,

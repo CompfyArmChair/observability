@@ -5,11 +5,16 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Data.SqlClient;
+using MassTransit;
+using Shared.ServiceBus;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<WarehouseDbContext>(options =>
   options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddMassTransit(config =>
+	config.AddDefault("WarehouseApi"));
 
 builder.Services.AddSwaggerDoc();
 builder.Services.AddFastEndpoints();
