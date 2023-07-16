@@ -1,37 +1,25 @@
-# Ignore common build output directories
-bin/
-obj/
-
-# Ignore Visual Studio and Visual Studio Code files
-**/*.user
-**/*.suo
-**/*.userprefs
-.vs/
-.vscode/
-
-# Ignore git and other VCS files
-.git/
-.gitignore
-.svn/
-.hg/
-
-# Ignore common temporary files and backup files
-*~
-*.bak
-*.swp
-*.tmp
-*.temp
-
-# Ignore OS-specific files
-.DS_Store
-Thumbs.db
-
-# Ignore NuGet cache
-.nuget/
-packages/
-
-# Ignore logs and test output
-log/
-logs/
-*.log
-TestResults/
+**/.classpath
+**/.dockerignore
+**/.env
+**/.git
+**/.gitignore
+**/.project
+**/.settings
+**/.toolstarget
+**/.vs
+**/.vscode
+**/*.*proj.user
+**/*.dbmdl
+**/*.jfm
+**/azds.yaml
+**/bin
+**/charts
+**/docker-compose*
+**/Dockerfile*
+**/node_modules
+**/npm-debug.log
+**/obj
+**/secrets.dev.yaml
+**/values.dev.yaml
+LICENSE
+README.md

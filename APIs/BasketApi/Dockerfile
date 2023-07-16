@@ -15,12 +15,12 @@ COPY APIs/BasketApi/ .
 COPY Shared/Shared.ServiceBus/ .
 COPY Shared/Shared.Instrumentation/ .
 
-RUN dotnet restore "BasketApi.csproj" --disable-parallel
+RUN dotnet restore "BasketApi.csproj" 
 
-RUN dotnet build "BasketApi.csproj" -c Release -o /app/build --no-restore
+RUN dotnet build "BasketApi.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "BasketApi.csproj" -c Release -o /app/publish /p:UseAppHost=false --no-restore
+RUN dotnet publish "BasketApi.csproj" -c Release -o /app/publish /p:UseAppHost=false 
 
 FROM base AS final
 WORKDIR /app

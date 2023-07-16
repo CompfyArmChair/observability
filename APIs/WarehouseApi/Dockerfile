@@ -15,12 +15,12 @@ COPY APIs/WarehouseApi/ .
 COPY Shared/Shared.ServiceBus/ .
 COPY Shared/Shared.Instrumentation/ .
 
-RUN dotnet restore "WarehouseApi.csproj" --disable-parallel
+RUN dotnet restore "WarehouseApi.csproj" 
 
-RUN dotnet build "WarehouseApi.csproj" -c Release -o /app/build --no-restore
+RUN dotnet build "WarehouseApi.csproj" -c Release -o /app/build 
 
 FROM build AS publish
-RUN dotnet publish "WarehouseApi.csproj" -c Release -o /app/publish /p:UseAppHost=false --no-restore
+RUN dotnet publish "WarehouseApi.csproj" -c Release -o /app/publish /p:UseAppHost=false 
 
 FROM base AS final
 WORKDIR /app

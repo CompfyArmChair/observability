@@ -17,12 +17,12 @@ WORKDIR "/src/website/ShopWebsite/Server/"
 COPY websites/ShopWebsite/Server/ .
 COPY Shared/Shared.ServiceBus/ .
 
-RUN dotnet restore "ShopWebsite.Server.csproj" --disable-parallel
+RUN dotnet restore "ShopWebsite.Server.csproj" 
 
-RUN dotnet build "ShopWebsite.Server.csproj" -c Release -o /app/build --no-restore
+RUN dotnet build "ShopWebsite.Server.csproj" -c Release -o /app/build 
 
 FROM build AS publish
-RUN dotnet publish  "ShopWebsite.Server.csproj" -c Release -o /app/publish --no-restore
+RUN dotnet publish  "ShopWebsite.Server.csproj" -c Release -o /app/publish 
 
 FROM base AS final
 WORKDIR /app

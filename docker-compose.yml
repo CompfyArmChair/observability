@@ -1,134 +1,104 @@
-version: "3.9"
+version: '3.4'
+
 services:
-
   sql-server-db:
-    container_name: sqlserver
     image: mcr.microsoft.com/mssql/server:latest
-    ports:
-        - "1433:1433"
-    environment:
-      SA_PASSWORD: "Password1234!"
-      ACCEPT_EULA: "Y"
-      MSSQL_PID: Express
-    volumes:
-        - sqlvolume:/var/opt/mssql
     networks:
         - shared-network
 
-  shopWebsite:
-    image: shop-image
-    build:
-      context: .
-      dockerfile: /websites/Dockerfile
-    depends_on: 
-        - sql-server-db
-    ports:
-        - 6081:80        
-    networks:
-        - shared-network
-
-  catalogueApi:
-    image: catalogue-image
-    build:
-      context: .
-      dockerfile: /APIS/CatalogueApi/Dockerfile
-    depends_on: 
-        - sql-server-db
-    ports:
-        - 6082:80        
-    networks:
-        - shared-network
-
-  salesApi:
-    image: sales-image
-    build:
-      context: .
-      dockerfile: /APIS/SalesApi/Dockerfile
-    depends_on: 
-        - sql-server-db
-    ports:
-        - 6083:80        
-    networks:
-        - shared-network
-
-  warehouseApi:
-    image: warehouse-image
-    build:
-      context: .
-      dockerfile: /APIS/WarehouseApi/Dockerfile
-    depends_on: 
-        - sql-server-db
-    ports:
-        - 6084:80
-    networks:
-        - shared-network
- 
-  basketApi:
-    image: basket-image
-    build:
-      context: .
-      dockerfile: /APIS/BasketApi/Dockerfile
-    depends_on: 
-        - sql-server-db
-    ports:
-        - 6085:80
-    networks:
-        - shared-network
-
-  billingApi:
-    image: billing-image
-    build:
-      context: .
-      dockerfile: /APIS/BillingApi/Dockerfile
-    depends_on: 
-        - sql-server-db
-    ports:
-        - 6086:80
-    networks:
-        - shared-network
-
-  shippingApi:
-    image: shipping-image
-    build:
-      context: .
-      dockerfile: /APIS/ShippingApi/Dockerfile
-    depends_on: 
-        - sql-server-db
-    ports:
-        - 6087:80
-    networks:
-        - shared-network
-
-  orderApi:
-    image: order-image
-    build:
-      context: .
-      dockerfile: /APIS/OrderApi/Dockerfile
-    depends_on: 
-    - sql-server-db
-    ports:
-    - 6088:80
-    networks:
-    - shared-network
- 
-  emailApi:
-    image: email-image
-    build:
-      context: .
-      dockerfile: /APIS/EmailApi/Dockerfile
-    ports:
-        - 6089:80
-    networks:
-        - shared-network
- 
   smtp4dev:
     image: rnwood/smtp4dev
-    ports:
-        - 3000:80
-        - 2525:25
     networks:
         - shared-network
- 
+
+  basketapi:
+    image: ${DOCKER_REGISTRY-}basketapi
+    build:
+      context: .
+      dockerfile: APIs/BasketApi/Dockerfile
+    depends_on: 
+        - sql-server-db
+    networks:
+        - shared-network
+
+  billingapi:
+    image: ${DOCKER_REGISTRY-}billingapi
+    build:
+      context: .
+      dockerfile: APIs/BillingApi/Dockerfile
+    depends_on: 
+        - sql-server-db
+    networks:
+        - shared-network
+
+  catalogueapi:
+    image: ${DOCKER_REGISTRY-}catalogueapi
+    build:
+      context: .
+      dockerfile: APIs/CatalogueApi/Dockerfile
+    depends_on: 
+        - sql-server-db
+    networks:
+        - shared-network
+
+  emailapi:
+    image: ${DOCKER_REGISTRY-}emailapi
+    build:
+      context: .
+      dockerfile: APIs/EmailApi/Dockerfile
+    depends_on: 
+        - sql-server-db
+    networks:
+        - shared-network
+
+  orderapi:
+    image: ${DOCKER_REGISTRY-}orderapi
+    build:
+      context: .
+      dockerfile: APIs/OrderApi/Dockerfile
+    depends_on: 
+        - sql-server-db
+    networks:
+        - shared-network
+
+  salesapi:
+    image: ${DOCKER_REGISTRY-}salesapi
+    build:
+      context: .
+      dockerfile: APIs/SalesApi/Dockerfile
+    depends_on: 
+        - sql-server-db
+    networks:
+        - shared-network
+
+  shippingapi:
+    image: ${DOCKER_REGISTRY-}shippingapi
+    build:
+      context: .
+      dockerfile: APIs/ShippingApi/Dockerfile
+    depends_on: 
+        - sql-server-db
+    networks:
+        - shared-network
+
+  warehouseapi:
+    image: ${DOCKER_REGISTRY-}warehouseapi
+    build:
+      context: .
+      dockerfile: APIs/WarehouseApi/Dockerfile
+    depends_on: 
+        - sql-server-db
+    networks:
+        - shared-network
+
+  shopwebsite.server:
+    image: ${DOCKER_REGISTRY-}shopwebsiteserver
+    build:
+      context: .
+      dockerfile: websites/Dockerfile
+    networks:
+        - shared-network
+
 volumes:
   sqlvolume:
     driver: local    

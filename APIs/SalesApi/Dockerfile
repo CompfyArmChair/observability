@@ -15,12 +15,12 @@ COPY APIs/SalesApi/ .
 COPY Shared/Shared.ServiceBus/ .
 COPY Shared/Shared.Instrumentation/ .
 
-RUN dotnet restore "SalesApi.csproj" --disable-parallel
+RUN dotnet restore "SalesApi.csproj" 
 
-RUN dotnet build "SalesApi.csproj" -c Release -o /app/build --no-restore
+RUN dotnet build "SalesApi.csproj" -c Release -o /app/build 
 
 FROM build AS publish
-RUN dotnet publish "SalesApi.csproj" -c Release -o /app/publish /p:UseAppHost=false --no-restore
+RUN dotnet publish "SalesApi.csproj" -c Release -o /app/publish /p:UseAppHost=false 
 
 FROM base AS final
 WORKDIR /app

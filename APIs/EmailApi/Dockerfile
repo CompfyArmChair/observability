@@ -15,12 +15,12 @@ COPY APIs/EmailApi/ .
 COPY Shared/Shared.ServiceBus/ .
 COPY Shared/Shared.Instrumentation/ .
 
-RUN dotnet restore "EmailApi.csproj" --disable-parallel
+RUN dotnet restore "EmailApi.csproj" 
 
-RUN dotnet build "EmailApi.csproj" -c Release -o /app/build --no-restore
+RUN dotnet build "EmailApi.csproj" -c Release -o /app/build 
 
 FROM build AS publish
-RUN dotnet publish "EmailApi.csproj" -c Release -o /app/publish /p:UseAppHost=false --no-restore
+RUN dotnet publish "EmailApi.csproj" -c Release -o /app/publish /p:UseAppHost=false 
 
 FROM base AS final
 WORKDIR /app
