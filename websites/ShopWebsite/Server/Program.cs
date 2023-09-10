@@ -1,4 +1,5 @@
 using MassTransit;
+using Shared.Instrumentation;
 using Shared.ServiceBus;
 using ShopWebsite.Server.Hubs;
 
@@ -17,7 +18,9 @@ namespace ShopWebsite
 			builder.Services.AddSignalR();
 
 			builder.Services.AddMassTransit(config => 
-                config.AddDefault("ShopWebsite.Server"));
+                config.AddDefault("ShopWebsite.Server", builder.Configuration.GetConnectionString("ServiceBus")!));
+
+			builder.Services.AddOpenTelemetry("ShopBFF", builder.Configuration.GetConnectionString("ApplicationInsights")!);
 
 			var app = builder.Build();            
 

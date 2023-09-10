@@ -10,6 +10,8 @@ COPY ["websites/ShopWebsite/Server/ShopWebsite.Server.csproj", "websites/ShopWeb
 COPY ["Shared/Shared.ServiceBus/Shared.ServiceBus.csproj", "Shared/Shared.ServiceBus/"]
 COPY ["websites/ShopWebsite/Client/ShopWebsite.Client.csproj", "websites/ShopWebsite/Client/"]
 COPY ["websites/ShopWebsite/Shared/ShopWebsite.Shared.csproj", "websites/ShopWebsite/Shared/"]
+
+
 RUN dotnet restore "websites/ShopWebsite/Server/ShopWebsite.Server.csproj"
 COPY . .
 WORKDIR "/src/websites/ShopWebsite/Server"

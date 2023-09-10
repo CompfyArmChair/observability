@@ -14,13 +14,13 @@ using WarehouseApi;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<WarehouseDbContext>(options =>
-  options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+  options.UseSqlServer(builder.Configuration.GetConnectionString("Database")));
 
 builder.Services.AddMassTransit(config =>
-	config.AddDefault("WarehouseApi"));
+	config.AddDefault("WarehouseApi", builder.Configuration.GetConnectionString("ServiceBus")!));
 
-builder.Services.AddInstrumentation();
-builder.Services.AddSingleton<ITelemetryInitializer, TelemetryInitializer>();
+builder.Services.AddOpenTelemetry("WarehouseApi", builder.Configuration.GetConnectionString("ApplicationInsights")!);
+//builder.Services.AddSingleton<ITelemetryInitializer, TelemetryInitializer>();
 
 builder.Services.AddSwaggerDoc();
 builder.Services.AddFastEndpoints();

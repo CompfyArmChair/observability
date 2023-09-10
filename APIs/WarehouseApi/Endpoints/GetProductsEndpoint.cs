@@ -3,9 +3,11 @@ using Microsoft.EntityFrameworkCore;
 using WarehouseApi.Data;
 using WarehouseApi.Data.Models;
 using WarehouseApi.Endpoints.Dtos;
+using WarehouseApi.Enums;
 
 namespace WarehouseApi.Endpoints;
 
+//TODO - change to GetAvailableProductsEndpoint
 public class GetProductsEndpoint : Endpoint<EmptyRequest, GetProductsEndpointResponse>
 {
 	private readonly WarehouseDbContext _dbContext;
@@ -30,17 +32,22 @@ public class GetProductsEndpoint : Endpoint<EmptyRequest, GetProductsEndpointRes
 
 		foreach (var stockItem in stock)
 		{
+			var isAvailable = stockItem.Status is Status.Available;
+
 			if (products.ContainsKey(stockItem.Sku))
 			{
 				var existingProduct = products[stockItem.Sku];
 
-				products[stockItem.Sku] = existingProduct
-					with
-				{ Quantity = existingProduct.Quantity + 1 };
+				if (isAvailable)
+				{
+					products[stockItem.Sku] = existingProduct
+						with
+					{ Quantity = existingProduct.Quantity + 1 };
+				}
 			}
 			else
 			{
-				products.Add(stockItem.Sku, new(stockItem.Sku, 1));
+				products.Add(stockItem.Sku, new(stockItem.Sku, isAvailable ? 1 : 0));
 			}
 
 		}

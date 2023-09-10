@@ -15,12 +15,10 @@ COPY APIs/BillingApi/ .
 COPY Shared/Shared.ServiceBus/ .
 COPY Shared/Shared.Instrumentation/ .
 
-RUN dotnet restore "BillingApi.csproj" 
-
 RUN dotnet build "BillingApi.csproj" -c Release -o /app/build 
 
 FROM build AS publish
-RUN dotnet publish "BillingApi.csproj" -c Release -o /app/publish /p:UseAppHost=false 
+RUN dotnet publish "BillingApi.csproj" -c Release -o /app/publish /p:UseAppHost=false --no-restore
 
 FROM base AS final
 WORKDIR /app

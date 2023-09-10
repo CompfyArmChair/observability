@@ -1,0 +1,34 @@
+﻿@using StockManagementWebsite.Shared;
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+
+<MudDialog>
+    <DialogContent>
+        <MudText @bind-Value="Sku" Label="SKU" Class="mr-2"></MudText>
+        <MudTextField @bind-Value="Name" Label="Name" Class="mr-2"></MudTextField>
+        <MudNumericField @bind-Value="Cost" Label="Cost" Class="mr-2"></MudNumericField>
+        <MudNumericField @bind-Value="Quantity" Label="Quantity" Class="mr-2"></MudNumericField>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Secondary" OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="EditProduct">Save</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; } = default!;
+
+    private string Sku = string.Empty;
+    private string Name = string.Empty;
+    private decimal Cost;
+    private int Quantity;
+
+    void Cancel() => MudDialog.Cancel();
+
+    private void EditProduct()
+    {
+
+        Snackbar.Add("Product edited successfully.", Severity.Success);
+        MudDialog.Close(DialogResult.Ok<ProductDto>(new(Sku, Name, Cost, Quantity)));
+    }
+}

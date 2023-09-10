@@ -10,23 +10,32 @@ services:
       MSSQL_PID: Express
     volumes:
         - sqlvolume:/var/opt/mssql
+
   smtp4dev:
     ports:
       - 3000:80
       - 2525:25
+
   basketapi:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
+      - ConnectionStrings__Database=${DATABASE_STRING}
+      - ConnectionStrings__ApplicationInsights=${APP_INSIGHTS}
+      - ConnectionStrings__ServiceBus=${SERVICEBUS_ENDPOINT}
     ports:
       - "80"
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+
   billingapi:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
+      - ConnectionStrings__Database=${DATABASE_STRING}
+      - ConnectionStrings__ApplicationInsights=${APP_INSIGHTS}
+      - ConnectionStrings__ServiceBus=${SERVICEBUS_ENDPOINT}
     ports:
       - "80"
     volumes:
@@ -37,6 +46,9 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
+      - ConnectionStrings__Database=${DATABASE_STRING}
+      - ConnectionStrings__ApplicationInsights=${APP_INSIGHTS}
+      - ConnectionStrings__ServiceBus=${SERVICEBUS_ENDPOINT}
     ports:
       - "80"
     volumes:
@@ -46,6 +58,8 @@ services:
   emailapi:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__ApplicationInsights=${APP_INSIGHTS}
+      - ConnectionStrings__ServiceBus=${SERVICEBUS_ENDPOINT}
     ports:
       - "80"
 
@@ -53,6 +67,9 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
+      - ConnectionStrings__Database=${DATABASE_STRING}
+      - ConnectionStrings__ApplicationInsights=${APP_INSIGHTS}
+      - ConnectionStrings__ServiceBus=${SERVICEBUS_ENDPOINT}
     ports:
       - "80"
     volumes:
@@ -63,6 +80,9 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
+      - ConnectionStrings__Database=${DATABASE_STRING}
+      - ConnectionStrings__ApplicationInsights=${APP_INSIGHTS}
+      - ConnectionStrings__ServiceBus=${SERVICEBUS_ENDPOINT}
     ports:
       - "80"
     volumes:
@@ -73,6 +93,9 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
+      - ConnectionStrings__Database=${DATABASE_STRING}
+      - ConnectionStrings__ApplicationInsights=${APP_INSIGHTS}
+      - ConnectionStrings__ServiceBus=${SERVICEBUS_ENDPOINT}
     ports:
       - "80"
     volumes:
@@ -83,6 +106,9 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
+      - ConnectionStrings__Database=${DATABASE_STRING}
+      - ConnectionStrings__ApplicationInsights=${APP_INSIGHTS}
+      - ConnectionStrings__ServiceBus=${SERVICEBUS_ENDPOINT}
     ports:
       - "80"
     volumes:
@@ -93,5 +119,16 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
+      - ConnectionStrings__ApplicationInsights=${APP_INSIGHTS}
+      - ConnectionStrings__ServiceBus=${SERVICEBUS_ENDPOINT}
     ports:
-      - "80"
+      - "65200:80"
+
+  stockmanagementwebsite.server:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - ConnectionStrings__ApplicationInsights=${APP_INSIGHTS}
+      - ConnectionStrings__ServiceBus=${SERVICEBUS_ENDPOINT}
+    ports:
+      - "65201:80"

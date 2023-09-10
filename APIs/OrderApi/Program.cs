@@ -14,13 +14,15 @@ using OrderApi;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<OrderDbContext>(options =>
-  options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+  options.UseSqlServer(builder.Configuration.GetConnectionString("Database")));
 
-builder.Services.AddInstrumentation();
-builder.Services.AddSingleton<ITelemetryInitializer, TelemetryInitializer>();
+//builder.Services.AddInsightsTelemetry();
+//builder.Services.AddSingleton<ITelemetryInitializer, TelemetryInitializer>();
 
 builder.Services.AddMassTransit(config =>
-	config.AddDefault("OrderApi"));
+	config.AddDefault("OrderApi", builder.Configuration.GetConnectionString("ServiceBus")!));
+
+builder.Services.AddOpenTelemetry("OrderApi", builder.Configuration.GetConnectionString("ApplicationInsights")!);
 
 builder.Services.AddSwaggerDoc();
 builder.Services.AddFastEndpoints();

@@ -32,13 +32,13 @@
 							<MudText>@product.Name</MudText>
 							<MudText>£@product.Cost</MudText>
 							<MudText>@product.Quantity</MudText>
-							<MudButton 
-								Variant="Variant.Filled" 
+							<TrackedMudButton Variant="Variant.Filled"
+								Name="AddToBasket"
 								Color="Color.Primary" 
 								DisableElevation="true" 
-								@onclick="_ => AddToBasket(product)">
+								OnClick="() => AddToBasket(product)">
 									Add to Basket
-							</MudButton>
+							</TrackedMudButton>
 						</MudStack>
 					</MudPaper>
 				</MudItem>

@@ -15,12 +15,10 @@ COPY APIs/CatalogueApi/ .
 COPY Shared/Shared.ServiceBus/ .
 COPY Shared/Shared.Instrumentation/ .
 
-RUN dotnet restore "CatalogueApi.csproj" 
-
 RUN dotnet build "CatalogueApi.csproj" -c Release -o /app/build 
 
 FROM build AS publish
-RUN dotnet publish "CatalogueApi.csproj" -c Release -o /app/publish /p:UseAppHost=false 
+RUN dotnet publish "CatalogueApi.csproj" -c Release -o /app/publish /p:UseAppHost=false --no-restore
 
 FROM base AS final
 WORKDIR /app

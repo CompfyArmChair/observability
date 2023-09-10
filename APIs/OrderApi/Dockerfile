@@ -15,12 +15,10 @@ COPY APIs/OrderApi/ .
 COPY Shared/Shared.ServiceBus/ .
 COPY Shared/Shared.Instrumentation/ .
 
-RUN dotnet restore "OrderApi.csproj" 
-
 RUN dotnet build "OrderApi.csproj" -c Release -o /app/build 
 
 FROM build AS publish
-RUN dotnet publish "OrderApi.csproj" -c Release -o /app/publish /p:UseAppHost=false 
+RUN dotnet publish "OrderApi.csproj" -c Release -o /app/publish /p:UseAppHost=false --no-restore
 
 FROM base AS final
 WORKDIR /app

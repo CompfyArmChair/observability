@@ -1,0 +1,39 @@
+﻿@using StockManagementWebsite.Shared;
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+
+<MudDialog>
+    <DialogContent>
+        <MudTextField @bind-Value="Sku" Label="SKU" Class="mr-2"></MudTextField>
+        <MudTextField @bind-Value="Name" Label="Name" Class="mr-2"></MudTextField>
+        <MudNumericField @bind-Value="Cost" Label="Cost" Class="mr-2"></MudNumericField>
+        <MudNumericField @bind-Value="Quantity" Label="Quantity" Class="mr-2"></MudNumericField>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Secondary" OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="AddProduct">Add</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; } = default!;
+
+    private string Sku = string.Empty;
+    private string Name = string.Empty;
+    private decimal Cost;
+    private int Quantity;
+   
+    void Cancel() => MudDialog.Cancel();
+
+    private void AddProduct()
+    {
+        if (string.IsNullOrEmpty(Sku) || string.IsNullOrEmpty(Name))
+        {
+            Snackbar.Add("Please fill out the SKU and Name before adding a product.", Severity.Error);
+            return;
+        }
+
+        Snackbar.Add("Product added successfully.", Severity.Success);
+        MudDialog.Close(DialogResult.Ok<ProductDto>(new(Sku, Name, Cost, Quantity)));
+    }
+}

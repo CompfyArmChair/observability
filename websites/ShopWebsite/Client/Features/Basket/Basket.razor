@@ -27,7 +27,11 @@
 
 <MudPopover Open="@_isOpen" Fixed="true" Class="px-4 pt-4">
 	<div class="d-flex flex-column">
-		<MudButton OnClick="@ToggleOpen" Class="ml-auto mr-n3 mb-1" Color="Color.Error">Close</MudButton>
+		<TrackedMudButton 
+			Name="CloseBasket"
+			OnClick="ToggleOpen" 
+			Class="ml-auto mr-n3 mb-1" 
+			Color="Color.Error">Close</TrackedMudButton>
 		@if (@BasketState.Value.IsLoading)
 		{
 			<MudText>Loading...</MudText>
@@ -44,15 +48,22 @@
 					<MudText>@product.Name</MudText>
 					<MudText>@product.Cost</MudText>
 					<MudText>@product.Quantity</MudText>
-					<MudButton Variant="Variant.Filled"
-					   Color="Color.Primary"
-					   DisableElevation="true" @onclick="_ => RemoveFromBasket(product)">
+					<TrackedMudButton Variant="Variant.Filled"
+					   Name="RemoveFromBasket"
+					   Color="Color.Secondary"
+					   DisableElevation="true" 
+					   OnClick="() => RemoveFromBasket(product)">
 						Remove
-					</MudButton>
+					</TrackedMudButton>
 				</MudStack>
 			}
-
-			<button class="btn btn-success" @onclick="Checkout">Checkout</button>
+			<TrackedMudButton Variant="Variant.Filled"
+							  Name="RemoveFromBasket"
+							  Color="Color.Success"
+							  DisableElevation="true"
+							  OnClick="Checkout">
+				Checkout
+			</TrackedMudButton>			
 		}
 	</div>
 </MudPopover>

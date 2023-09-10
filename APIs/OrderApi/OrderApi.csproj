@@ -16,7 +16,8 @@
     <PackageReference Include="FastEndpoints.Swagger" Version="5.7.2" />
     <PackageReference Include="MassTransit.Azure.ServiceBus.Core" Version="8.0.15" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.3" />
-    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.17.2" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.18.1" />
+    <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="7.0.2" />
   </ItemGroup>
 
   <ItemGroup>

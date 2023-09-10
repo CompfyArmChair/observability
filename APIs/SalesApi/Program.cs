@@ -8,14 +8,16 @@ using Microsoft.Data.SqlClient;
 using Shared.Instrumentation;
 using Microsoft.ApplicationInsights.Extensibility;
 using Salespi;
+using MassTransit;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<SalesDbContext>(options =>
-  options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+  options.UseSqlServer(builder.Configuration.GetConnectionString("Database")));
 
-builder.Services.AddInstrumentation();
-builder.Services.AddSingleton<ITelemetryInitializer, TelemetryInitializer>();
+builder.Services.AddOpenTelemetry("SaleApi", builder.Configuration.GetConnectionString("ApplicationInsights")!);
+
+//builder.Services.AddSingleton<ITelemetryInitializer, TelemetryInitializer>();
 
 builder.Services.AddSwaggerDoc();
 builder.Services.AddFastEndpoints();

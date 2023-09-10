@@ -7,16 +7,27 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Blazor.WebAssembly.Telemetry" Version="0.0.1-observability-poc" />
     <PackageReference Include="Fluxor.Blazor.Web" Version="5.7.0" />
     <PackageReference Include="Fluxor.Blazor.Web.ReduxDevTools" Version="5.7.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="7.0.5" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="7.0.5" PrivateAssets="all" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="7.0.5" />
-    <PackageReference Include="MudBlazor" Version="6.2.0" />
+    <PackageReference Include="MudBlazor" Version="6.4.1" />
+    <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="7.0.2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Shared\ShopWebsite.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="wwwroot\appsettings.Development.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

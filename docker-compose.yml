@@ -95,7 +95,15 @@ services:
     image: ${DOCKER_REGISTRY-}shopwebsiteserver
     build:
       context: .
-      dockerfile: websites/Dockerfile
+      dockerfile: websites/ShopWebsite/Dockerfile
+    networks:
+        - shared-network
+
+  stockmanagementwebsite.server:
+    image: ${DOCKER_REGISTRY-}stockmanagementserver
+    build:
+      context: .
+      dockerfile: websites/StockManagementWebsite/Dockerfile
     networks:
         - shared-network
 

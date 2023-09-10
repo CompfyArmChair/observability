@@ -15,12 +15,10 @@ COPY APIs/ShippingApi/ .
 COPY Shared/Shared.ServiceBus/ .
 COPY Shared/Shared.Instrumentation/ .
 
-RUN dotnet restore "ShippingApi.csproj" 
-
 RUN dotnet build "ShippingApi.csproj" -c Release -o /app/build 
 
 FROM build AS publish
-RUN dotnet publish "ShippingApi.csproj" -c Release -o /app/publish /p:UseAppHost=false 
+RUN dotnet publish "ShippingApi.csproj" -c Release -o /app/publish /p:UseAppHost=false --no-restore
 
 FROM base AS final
 WORKDIR /app

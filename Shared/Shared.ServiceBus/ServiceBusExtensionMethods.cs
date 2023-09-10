@@ -6,7 +6,7 @@ namespace Shared.ServiceBus
 {
 	public static class ServiceBusExtensionMethods
 	{
-		public static void AddDefault(this IBusRegistrationConfigurator config, string serviceName)
+		public static void AddDefault(this IBusRegistrationConfigurator config, string serviceName, string connectionString)
 		{
 			Assembly[] assemblies = GetConsumerAssemblies();
 			config.AddConsumers(assemblies);
@@ -14,7 +14,7 @@ namespace Shared.ServiceBus
 
 			config.UsingAzureServiceBus(delegate (IBusRegistrationContext context, IServiceBusBusFactoryConfigurator asbCfg)
 			{
-				asbCfg.Host("Endpoint=sb://sb-observability.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=nvXfQvIfoKSt6X/gPse6T0aLOalyzrAGE+ASbHO1x4k=");
+				asbCfg.Host(connectionString);
 				asbCfg.UseServiceBusMessageScheduler();
 				asbCfg.UseMessageRetry(delegate (IRetryConfigurator rtCfg)
 				{

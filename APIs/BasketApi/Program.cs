@@ -14,13 +14,14 @@ using Microsoft.ApplicationInsights.Extensibility;
 var builder = WebApplication.CreateBuilder();
 
 builder.Services.AddDbContext<BasketDbContext>(options =>
-  options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+  options.UseSqlServer(builder.Configuration.GetConnectionString("Database")));
 
 builder.Services.AddMassTransit(config =>
-	config.AddDefault("BasketApi"));
+	config.AddDefault("BasketApi", builder.Configuration.GetConnectionString("ServiceBus")!));
 
-builder.Services.AddInstrumentation();
-builder.Services.AddSingleton<ITelemetryInitializer, TelemetryInitializer>();
+builder.Services.AddOpenTelemetry("BasketApi", builder.Configuration.GetConnectionString("ApplicationInsights")!);
+
+//builder.Services.AddSingleton<ITelemetryInitializer, TelemetryInitializer>();
 
 builder.Services.AddSwaggerDoc();
 builder.Services.AddFastEndpoints();

@@ -7,10 +7,10 @@ using EmailApi;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddMassTransit(config =>
-	config.AddDefault("EmailApi"));
+	config.AddDefault("EmailApi", builder.Configuration.GetConnectionString("ServiceBus")!));
 
-builder.Services.AddInstrumentation();
-builder.Services.AddSingleton<ITelemetryInitializer, TelemetryInitializer>();
+builder.Services.AddOpenTelemetry("EmailApi", builder.Configuration.GetConnectionString("ApplicationInsights")!);
+//builder.Services.AddSingleton<ITelemetryInitializer, TelemetryInitializer>();
 
 var app = builder.Build();
 

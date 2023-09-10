@@ -8,13 +8,13 @@ public class CheckoutState
 {
 	public bool IsLoading { get; }
 
-	public string Email { get; set; } = string.Empty;
-	public string FirstName { get; set; } = string.Empty;
-	public string LastName { get; set; } = string.Empty;
-	public string Address { get; set; } = string.Empty;
-	public string Expiration { get; set; } = string.Empty;
-	public string CreditCard { get; set; } = string.Empty;
-	public string Cvc { get; set; } = string.Empty;
+	public string Email { get; set; } = "email@address.com";
+	public string FirstName { get; set; } = "Sue";
+	public string LastName { get; set; } = "Lou";
+	public string Address { get; set; } = "Road";
+	public string Expiration { get; set; } = "05/05";
+	public string CreditCard { get; set; } = "1111222233334444";
+	public string Cvc { get; set; } = "123";
 
 	public BasketDto Basket { get; set; } = default!;
 

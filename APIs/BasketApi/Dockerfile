@@ -15,12 +15,10 @@ COPY APIs/BasketApi/ .
 COPY Shared/Shared.ServiceBus/ .
 COPY Shared/Shared.Instrumentation/ .
 
-RUN dotnet restore "BasketApi.csproj" 
-
 RUN dotnet build "BasketApi.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "BasketApi.csproj" -c Release -o /app/publish /p:UseAppHost=false 
+RUN dotnet publish "BasketApi.csproj" -c Release -o /app/publish /p:UseAppHost=false --no-restore
 
 FROM base AS final
 WORKDIR /app

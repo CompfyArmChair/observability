@@ -1,0 +1,67 @@
+﻿@page "/"
+@using StockManagementWebsite.Shared;
+
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+
+<MudContainer>
+	<MudText Typo="Typo.h5">Stock Management</MudText>
+
+	<MudTable Items="@products" Class="mt-4">
+		<HeaderContent>
+			<MudTh>SKU</MudTh>
+			<MudTh>Name</MudTh>
+			<MudTh>Cost</MudTh>
+			<MudTh>Quantity</MudTh>
+			<MudTh>Actions</MudTh>
+		</HeaderContent>
+		<RowTemplate>			
+			<MudTd>@context.Sku</MudTd>
+			<MudTd>@context.Name</MudTd>
+			<MudTd>@context.Cost.ToString("C")</MudTd>
+			<MudTd>
+				<MudIconButton Icon="@Icons.Material.Filled.Add" OnClick="(() => UpdateQuantity(context, 1))"/>
+					@context.Quantity
+				<MudIconButton Icon="@Icons.Material.Filled.Remove" OnClick="(() => UpdateQuantity(context, -1))"/>
+			</MudTd>
+			<MudTd>
+				<MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Secondary" OnClick="(() => RemoveProduct(context))" />
+				@*<MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Secondary" OnClick="(() => RemoveProduct(context))"/>*@
+			</MudTd>
+		</RowTemplate>
+	</MudTable>
+</MudContainer>
+
+<MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="OpenAddProductDialog">Add Product</MudButton>
+
+@code {
+	private List<ProductDto> products = new List<ProductDto>();
+
+	private async Task OpenAddProductDialog()
+	{
+		var options = new DialogOptions { CloseOnEscapeKey = true };
+		var dialog = await DialogService.ShowAsync<AddProductDialog>("Add Product", options);
+		var result = await dialog.Result;
+
+		if (!result.Canceled)
+		{			
+			products.Add((ProductDto)result.Data);
+		}
+	}
+
+	private void RemoveProduct(ProductDto product)
+	{
+		products.Remove(product);
+		Snackbar.Add("Product removed successfully.", Severity.Success);
+	}
+
+	private void UpdateQuantity(ProductDto product, int delta)
+	{
+		var index = products.IndexOf(product);
+		if (index >= 0)
+		{
+			var updatedProduct = product with { Quantity = product.Quantity + delta };
+			products[index] = updatedProduct;
+		}
+	}
+}
