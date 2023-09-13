@@ -1,0 +1,66 @@
+﻿@page "/stock-items/{Sku}"
+
+@using Fluxor;
+@using MudBlazor
+@using StockManagementWebsite.Client.Features.StockItems.Store.Actions;
+@using StockManagementWebsite.Client.Features.StockItems.Store;
+@using StockManagementWebsite.Shared
+@inject IDispatcher Dispatcher
+@inject IState<StockItemsState> StockItemsState
+@inject IDialogService DialogService
+
+<div class="container">
+    <h1>Stock Items for SKU: @Sku</h1>
+
+    <MudButton Color="Color.Primary" OnClick="OpenAddStockItemDialog">Add Stock Item</MudButton>
+
+    @if (StockItemsState.Value.IsLoading)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else
+    {
+        <MudTable Items="@StockItemsState.Value.StockItems" Class="mt-4">
+            <HeaderContent>
+                <MudTh>Unique ID</MudTh>
+                <MudTh>Date Added</MudTh>
+                <MudTh>Actions</MudTh>
+            </HeaderContent>
+            <RowTemplate Context="stockItem">
+                <MudTd>@stockItem.UniqueIdentifier</MudTd>
+                <MudTd>@stockItem.DateOfAddition</MudTd>
+                <MudTd>
+                    <MudButton Color="Color.Warning" OnClick="@(() => OpenEditStockItemDialog(stockItem))">Edit</MudButton>
+                    <MudButton Color="Color.Error" OnClick="@(() => OpenDeleteStockItemDialog(stockItem))">Delete</MudButton>
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public string Sku { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Dispatcher.Dispatch(new FetchStockItemsForSkuAction(Sku));
+    }
+
+    private async Task OpenAddStockItemDialog()
+    {
+        var parameters = new DialogParameters
+            {
+                ["Sku"] = Sku
+            };
+
+        var dialog = DialogService.Show<AddStockItemDialog>("Add Stock Item", parameters);
+        var result = await dialog.Result;
+
+        if (!result.Cancelled)
+        {
+            // Optionally dispatch an action to refresh the stock items if the result contains a success flag.
+        }
+    }
+}
+

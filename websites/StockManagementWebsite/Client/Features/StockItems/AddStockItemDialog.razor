@@ -1,0 +1,36 @@
+﻿@using StockManagementWebsite.Shared;
+@inject IDialogService DialogService
+
+<MudDialog>
+    <DialogContent>
+        <MudTextField @bind-Value="@UniqueIdentifier" Label="Unique ID" Class="mr-2"></MudTextField>
+        <MudDatePicker @bind-Date="DateOfAddition" Label="Date Added"></MudDatePicker>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Secondary" OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="AddStockItem">Add</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; } = default!;
+    [Parameter] public string Sku { get; set; } = default!;
+
+    private string UniqueIdentifier = string.Empty;
+    private DateTime? DateOfAddition = DateTime.Now;
+    private decimal Cost;
+
+    void Cancel() => MudDialog.Cancel();
+
+    private void AddStockItem()
+    {
+        var stockItem = new StockItemDto
+            {
+                Sku = Sku,
+                UniqueIdentifier = UniqueIdentifier,
+                DateOfAddition = DateOfAddition ?? DateTime.Now
+            };
+
+        // Dispatch action to add stock item
+    }
+}

@@ -1,0 +1,82 @@
+﻿@page "/"
+@using Fluxor;
+@using StockManagementWebsite.Client.Features.StockCategory.Store.Actions;
+@using StockManagementWebsite.Shared;
+
+@inject NavigationManager NavManager;
+@inject IDialogService DialogService;
+@inject ISnackbar Snackbar;
+@inject IDispatcher Dispatcher;
+
+<MudContainer>
+	<MudText Typo="Typo.h5">Stock Management</MudText>
+
+	<MudTable Items="@categories" Class="mt-4" RowClick="NavigateToDetails">
+		<HeaderContent>
+			<MudTh>SKU</MudTh>
+			<MudTh>Name</MudTh>
+			<MudTh>Cost</MudTh>
+			<MudTh>Quantity</MudTh>
+			<MudTh>Actions</MudTh>
+		</HeaderContent>
+		<RowTemplate>			
+			<MudTd>@context.Sku</MudTd>
+			<MudTd>@context.Name</MudTd>
+			<MudTd>@context.Cost.ToString("C")</MudTd>
+			<MudTd>@context.Quantity</MudTd>
+			<MudTd>
+				<MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Secondary" OnClick="(() => OpenEditCategoryDialog(context))" />			    
+				<MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Secondary" OnClick="(() => RemoveCategory(context.Id))"/>
+			</MudTd>
+		</RowTemplate>
+	</MudTable>
+</MudContainer>
+
+<MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="OpenAddCategoryDialog">Add Stock Category</MudButton>
+
+@code {
+	// Load from store
+	private List<StockCategoryDto> categories = new List<StockCategoryDto>();
+
+	private async Task OpenAddCategoryDialog()
+	{
+		var options = new DialogOptions { CloseOnEscapeKey = true };
+		var dialog = await DialogService.ShowAsync<AddStockCategoryDialog>("Add Category", options);
+		var result = await dialog.Result;
+
+		if (!result.Canceled)
+		{	
+			var toAdd = (AddStockCategoryDto)result.Data;
+			Dispatcher.Dispatch(new AddStockCategoryAction(new AddStockCategoryDto(toAdd.Sku, toAdd.Name, toAdd.Cost)));
+		}
+	}
+
+	private async Task OpenEditCategoryDialog(StockCategoryDto category)
+	{
+		var parameters = new DialogParameters<EditStockCategoryDialog>();
+		parameters.Add(x => x.CategoryToEdit, category);
+
+
+
+		//var options = new DialogOptions { CloseOnEscapeKey = true };
+		var dialog = await DialogService.ShowAsync<EditStockCategoryDialog>("Edit Category", parameters);
+		var result = await dialog.Result;
+
+		if (!result.Canceled)
+		{
+			var toEdit = (EditStockCategoryDto)result.Data;
+			Dispatcher.Dispatch(new EditStockCategoryAction(new EditStockCategoryDto(toEdit.Id, toEdit.Sku, toEdit.Name, toEdit.Cost)));
+		}
+	}
+
+	private void RemoveCategory(int categoryId)
+	{
+		Dispatcher.Dispatch(new RemoveStockCategoryAction(categoryId));
+		Snackbar.Add("Category removed successfully.", Severity.Success);
+	}
+
+	private void NavigateToDetails(StockCategoryDto category)
+	{
+		NavManager.NavigateTo($"/stock-details/{category.Id}");
+	}
+}
