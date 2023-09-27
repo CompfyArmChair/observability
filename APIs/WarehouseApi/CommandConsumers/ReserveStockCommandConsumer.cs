@@ -1,7 +1,6 @@
 ﻿using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Shared.ServiceBus.Commands;
-using Shared.ServiceBus.Events;
 using WarehouseApi.Data;
 using WarehouseApi.Data.Models;
 using WarehouseApi.Enums;

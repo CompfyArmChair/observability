@@ -1,17 +1,25 @@
 ﻿@page "/"
 @using Fluxor;
+@using Microsoft.AspNetCore.SignalR.Client;
 @using StockManagementWebsite.Client.Features.StockCategory.Store.Actions;
+@using StockManagementWebsite.Shared.StockCategories;
+@using StockManagementWebsite.Client.Features.StockCategory.Store;
 @using StockManagementWebsite.Shared;
 
 @inject NavigationManager NavManager;
 @inject IDialogService DialogService;
-@inject ISnackbar Snackbar;
 @inject IDispatcher Dispatcher;
+@inject IState<StockCategoriesState> CategoriesState;
+
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+@implements IAsyncDisposable
 
 <MudContainer>
 	<MudText Typo="Typo.h5">Stock Management</MudText>
 
-	<MudTable Items="@categories" Class="mt-4" RowClick="NavigateToDetails">
+	<TrackedMudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="OpenAddCategoryDialog">Add Stock Category</TrackedMudButton>
+
+	<MudTable Items="@CategoriesState.Value.Categories" Loading="@CategoriesState.Value.IsLoading" Class="mt-4">
 		<HeaderContent>
 			<MudTh>SKU</MudTh>
 			<MudTh>Name</MudTh>
@@ -25,18 +33,43 @@
 			<MudTd>@context.Cost.ToString("C")</MudTd>
 			<MudTd>@context.Quantity</MudTd>
 			<MudTd>
-				<MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Secondary" OnClick="(() => OpenEditCategoryDialog(context))" />			    
-				<MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Secondary" OnClick="(() => RemoveCategory(context.Id))"/>
+				<TrackedMudButton Color="Color.Secondary" OnClick="(() => OpenEditCategoryDialog(context))">
+					<MudIcon Icon="@Icons.Material.Filled.Edit" />
+				</TrackedMudButton>
+				<TrackedMudButton Color="Color.Error" OnClick="(() => RemoveCategory(context.Sku))">
+					<MudIcon Icon="@Icons.Material.Filled.Delete" />
+				</TrackedMudButton>
+				<TrackedMudButton Color="Color.Primary" OnClick="(() => NavigateToDetails(context.Sku))">
+					<MudIcon Icon="@Icons.Material.Filled.ArrowForward" />
+				</TrackedMudButton>
 			</MudTd>
 		</RowTemplate>
 	</MudTable>
 </MudContainer>
 
-<MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="OpenAddCategoryDialog">Add Stock Category</MudButton>
 
 @code {
-	// Load from store
-	private List<StockCategoryDto> categories = new List<StockCategoryDto>();
+	private HubConnection? _hubConnection;
+
+	protected override async Task OnInitializedAsync()
+	{
+		await base.OnInitializedAsync();
+
+		Dispatcher.Dispatch(new FetchStockCategoriesAction());
+
+		_hubConnection = new HubConnectionBuilder()
+			.WithUrl(NavManager.ToAbsoluteUri("/StockManagementHub"))
+			.Build();
+
+		_hubConnection.On("CategoriesChanged", () =>
+		{
+			Console.WriteLine($"CategoriesChanged");
+			Dispatcher.Dispatch(new FetchStockCategoriesAction());
+		});
+
+		await _hubConnection.StartAsync();
+		Console.WriteLine($"Hubstate: {_hubConnection.State}");
+	}
 
 	private async Task OpenAddCategoryDialog()
 	{
@@ -56,27 +89,35 @@
 		var parameters = new DialogParameters<EditStockCategoryDialog>();
 		parameters.Add(x => x.CategoryToEdit, category);
 
+		var options = new DialogOptions { CloseOnEscapeKey = true };
 
-
-		//var options = new DialogOptions { CloseOnEscapeKey = true };
-		var dialog = await DialogService.ShowAsync<EditStockCategoryDialog>("Edit Category", parameters);
+		var dialog = await DialogService.ShowAsync<EditStockCategoryDialog>("Edit Category", parameters, options);
 		var result = await dialog.Result;
 
 		if (!result.Canceled)
 		{
 			var toEdit = (EditStockCategoryDto)result.Data;
-			Dispatcher.Dispatch(new EditStockCategoryAction(new EditStockCategoryDto(toEdit.Id, toEdit.Sku, toEdit.Name, toEdit.Cost)));
+			Dispatcher.Dispatch(
+				new EditStockCategoryAction(
+					new EditStockCategoryDto(toEdit.Sku, toEdit.Name, toEdit.Cost)));
 		}
 	}
 
-	private void RemoveCategory(int categoryId)
+	private void RemoveCategory(string sku)
 	{
-		Dispatcher.Dispatch(new RemoveStockCategoryAction(categoryId));
-		Snackbar.Add("Category removed successfully.", Severity.Success);
+		Dispatcher.Dispatch(new RemoveStockCategoryAction(sku));
 	}
 
-	private void NavigateToDetails(StockCategoryDto category)
+	private void NavigateToDetails(string sku)
 	{
-		NavManager.NavigateTo($"/stock-details/{category.Id}");
+		NavManager.NavigateTo($"/stock-items/{sku}");
+	}
+
+	public async ValueTask DisposeAsync()
+	{
+		if (_hubConnection is not null)
+		{
+			await _hubConnection.DisposeAsync();
+		}
 	}
 }

@@ -7,12 +7,11 @@ using WarehouseApi.Enums;
 
 namespace WarehouseApi.Endpoints;
 
-//TODO - change to GetAvailableProductsEndpoint
-public class GetProductsEndpoint : Endpoint<EmptyRequest, GetProductsEndpointResponse>
+public class GetAvailableProductsEndpoint : Endpoint<EmptyRequest, GetAvailableProductsEndpointResponse>
 {
 	private readonly WarehouseDbContext _dbContext;
 
-	public GetProductsEndpoint(WarehouseDbContext dbContext) =>
+	public GetAvailableProductsEndpoint(WarehouseDbContext dbContext) =>
 		_dbContext = dbContext;
 
 
@@ -52,7 +51,7 @@ public class GetProductsEndpoint : Endpoint<EmptyRequest, GetProductsEndpointRes
 
 		}
 
-		var response = new GetProductsEndpointResponse()
+		var response = new GetAvailableProductsEndpointResponse()
 		{
 			Products = products.Values.ToArray()
 		};
@@ -61,7 +60,7 @@ public class GetProductsEndpoint : Endpoint<EmptyRequest, GetProductsEndpointRes
 	}
 }
 
-public class GetProductsEndpointResponse
+public class GetAvailableProductsEndpointResponse
 {
 	public ProductDto[] Products { get; set; } = Array.Empty<ProductDto>();
 }

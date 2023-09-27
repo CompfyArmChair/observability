@@ -1,5 +1,5 @@
 ﻿using Fluxor;
-using StockManagementWebsite.Shared;
+using StockManagementWebsite.Shared.StockItems;
 
 namespace StockManagementWebsite.Client.Features.StockItems.Store;
 
@@ -9,13 +9,11 @@ public class StockItemsState
     public bool IsLoading { get; }
     public IEnumerable<StockItemDto> StockItems { get; }
 
-    // Default constructor
     private StockItemsState()
     {
         StockItems = Enumerable.Empty<StockItemDto>();
     }
 
-    // Constructor that sets the actual properties
     public StockItemsState(bool isLoading, IEnumerable<StockItemDto> stockItems)
     {
         IsLoading = isLoading;

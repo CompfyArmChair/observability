@@ -1,5 +1,4 @@
-﻿@using StockManagementWebsite.Shared;
-@inject ISnackbar Snackbar
+﻿@using StockManagementWebsite.Shared.StockCategories;
 @inject IDialogService DialogService
 
 <MudDialog>
@@ -16,16 +15,16 @@
 
 @code {
     [CascadingParameter] MudDialogInstance MudDialog { get; set; } = default!;
-    [Parameter] public StockCategoryDto CategoryToEdit { get; set; }
-   
+    [Parameter] public StockCategoryDto CategoryToEdit { get; set; } = default!;
+
     private string Sku = string.Empty;
     private string Name = string.Empty;
     private decimal Cost;
 
     void Cancel() => MudDialog.Cancel();
 
-    public EditStockCategoryDialog()
-    {   
+    protected override void OnInitialized()
+    {        
         Sku = CategoryToEdit.Sku;
         Name = CategoryToEdit.Name;
         Cost = CategoryToEdit.Cost;
@@ -33,7 +32,6 @@
 
     private void SaveCategoryChanges()
     {
-        Snackbar.Add("Stock category edited successfully.", Severity.Success);
-        MudDialog.Close(DialogResult.Ok<EditStockCategoryDto>(new(CategoryToEdit.Id, CategoryToEdit.Sku, Name, Cost)));
+        MudDialog.Close(DialogResult.Ok<EditStockCategoryDto>(new(CategoryToEdit.Sku, Name, Cost)));
     }
 }

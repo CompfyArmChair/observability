@@ -1,15 +1,13 @@
 global using FastEndpoints;
-using FastEndpoints.Swagger;
 using BillingApi.Data;
+using FastEndpoints.Swagger;
+using MassTransit;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
-using Microsoft.Data.SqlClient;
-using MassTransit;
-using Shared.ServiceBus;
 using Shared.Instrumentation;
-using Microsoft.ApplicationInsights.Extensibility;
-using BillingApi;
+using Shared.ServiceBus;
 
 var builder = WebApplication.CreateBuilder(args);
 

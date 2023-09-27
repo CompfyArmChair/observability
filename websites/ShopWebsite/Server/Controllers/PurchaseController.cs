@@ -10,13 +10,11 @@ namespace ShopWebsite.Server.Controllers
 	[Route("api/[controller]")]
 	public class PurchaseController : ControllerBase
 	{
-		private readonly HttpClient _httpClient;
 		private readonly ISendEndpointProvider _sendEndpointProvider;
 		private readonly IMapper _mapper;
 
-		public PurchaseController(HttpClient httpClient, ISendEndpointProvider sendEndpointProvider)
-		{
-			_httpClient = httpClient;
+		public PurchaseController(ISendEndpointProvider sendEndpointProvider)
+		{			
 			_sendEndpointProvider = sendEndpointProvider;
 
 			var configuration = new MapperConfiguration(cfg =>

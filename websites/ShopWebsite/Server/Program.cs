@@ -20,9 +20,9 @@ namespace ShopWebsite
 			builder.Services.AddMassTransit(config => 
                 config.AddDefault("ShopWebsite.Server", builder.Configuration.GetConnectionString("ServiceBus")!));
 
-			builder.Services.AddOpenTelemetry("ShopBFF", builder.Configuration.GetConnectionString("ApplicationInsights")!);
+            builder.Services.AddOpenTelemetry("ShopBFF", builder.Configuration.GetConnectionString("ApplicationInsights")!);
 
-			var app = builder.Build();            
+            var app = builder.Build();            
 
             if (app.Environment.IsDevelopment())
             {
@@ -37,7 +37,6 @@ namespace ShopWebsite
             app.UseStaticFiles();
 
             app.UseRouting();
-
 
             app.MapRazorPages();
 			app.MapHub<ShopHub>("/shophub");

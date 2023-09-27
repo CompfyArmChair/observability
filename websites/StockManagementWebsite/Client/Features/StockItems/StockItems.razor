@@ -1,66 +1,100 @@
 ﻿@page "/stock-items/{Sku}"
-
 @using Fluxor;
-@using MudBlazor
+@using Microsoft.AspNetCore.SignalR.Client;
+@using MudBlazor;
 @using StockManagementWebsite.Client.Features.StockItems.Store.Actions;
+@using StockManagementWebsite.Shared.StockItems;
 @using StockManagementWebsite.Client.Features.StockItems.Store;
-@using StockManagementWebsite.Shared
+
+@inject NavigationManager NavManager;
 @inject IDispatcher Dispatcher
 @inject IState<StockItemsState> StockItemsState
 @inject IDialogService DialogService
+@inject ISnackbar Snackbar;
 
-<div class="container">
-    <h1>Stock Items for SKU: @Sku</h1>
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+@implements IAsyncDisposable
 
-    <MudButton Color="Color.Primary" OnClick="OpenAddStockItemDialog">Add Stock Item</MudButton>
+<MudContainer>
+	<h1>Stock Items for SKU: @Sku</h1>
 
-    @if (StockItemsState.Value.IsLoading)
-    {
-        <p><em>Loading...</em></p>
-    }
-    else
-    {
-        <MudTable Items="@StockItemsState.Value.StockItems" Class="mt-4">
-            <HeaderContent>
-                <MudTh>Unique ID</MudTh>
-                <MudTh>Date Added</MudTh>
-                <MudTh>Actions</MudTh>
-            </HeaderContent>
-            <RowTemplate Context="stockItem">
-                <MudTd>@stockItem.UniqueIdentifier</MudTd>
-                <MudTd>@stockItem.DateOfAddition</MudTd>
-                <MudTd>
-                    <MudButton Color="Color.Warning" OnClick="@(() => OpenEditStockItemDialog(stockItem))">Edit</MudButton>
-                    <MudButton Color="Color.Error" OnClick="@(() => OpenDeleteStockItemDialog(stockItem))">Delete</MudButton>
-                </MudTd>
-            </RowTemplate>
-        </MudTable>
-    }
-</div>
+	<TrackedMudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="OpenAddStockItemsDialog">Add Stock Items</TrackedMudButton>
+
+	<MudTable Items="@StockItemsState.Value.StockItems" Loading="@StockItemsState.Value.IsLoading" Class="mt-4">
+		<HeaderContent>
+			<MudTh>Unique ID</MudTh>
+			<MudTh>Date Added</MudTh>
+			<MudTh>Status</MudTh>
+			<MudTh>Actions</MudTh>
+		</HeaderContent>
+		<RowTemplate Context="stockItem">
+			<MudTd>@stockItem.Id</MudTd>
+			<MudTd>@stockItem.DateOfAddition</MudTd>
+			<MudTd>@stockItem.Status.ToString()</MudTd>
+			<MudTd>
+				<TrackedMudButton Color="Color.Error" OnClick="@(() => DeleteStockItem(stockItem))">
+					<MudIcon Icon="@Icons.Material.Filled.Delete" />
+				</TrackedMudButton>
+			</MudTd>
+		</RowTemplate>
+	</MudTable>
+</MudContainer>
 
 @code {
-    [Parameter]
-    public string Sku { get; set; }
+	[Parameter]
+	public string Sku { get; set; }
 
-    protected override void OnInitialized()
-    {
-        Dispatcher.Dispatch(new FetchStockItemsForSkuAction(Sku));
-    }
+	private HubConnection? _hubConnection;
 
-    private async Task OpenAddStockItemDialog()
-    {
-        var parameters = new DialogParameters
-            {
-                ["Sku"] = Sku
-            };
+	protected override async Task OnInitializedAsync()
+	{
+		await base.OnInitializedAsync();
 
-        var dialog = DialogService.Show<AddStockItemDialog>("Add Stock Item", parameters);
-        var result = await dialog.Result;
+		Dispatcher.Dispatch(new FetchStockItemForSkuAction(Sku));
 
-        if (!result.Cancelled)
-        {
-            // Optionally dispatch an action to refresh the stock items if the result contains a success flag.
-        }
-    }
+		_hubConnection = new HubConnectionBuilder()
+			.WithUrl(NavManager.ToAbsoluteUri("/StockManagementHub"))
+			.Build();
+
+		_hubConnection.On<string>("StockSkuChanged", (sku) =>
+		{
+			Console.WriteLine($"StockSkuChanged: {sku}");
+			if (sku == Sku)
+			{
+				Dispatcher.Dispatch(new FetchStockItemForSkuAction(Sku));
+			}
+		});
+
+		await _hubConnection.StartAsync();
+		Console.WriteLine($"Hubstate: {_hubConnection.State}");
+	}
+
+	private async Task OpenAddStockItemsDialog()
+	{
+		var options = new DialogOptions { CloseOnEscapeKey = true };
+
+		var dialog = DialogService.Show<AddStockItemsDialog>("Add Stock Item", options);
+		var result = await dialog.Result;
+
+		if (!result.Cancelled)
+		{
+			var quantityToAdd = (int)result.Data;
+			Dispatcher.Dispatch(
+				new AddStockItemAction(
+					new AddStockItemsDto(Sku, quantityToAdd)));
+		}
+	}
+
+	private void DeleteStockItem(StockItemDto stockItem)
+	{
+		Dispatcher.Dispatch(new DeleteStockItemAction(stockItem.Id));
+	}
+
+	public async ValueTask DisposeAsync()
+	{
+		if (_hubConnection is not null)
+		{
+			await _hubConnection.DisposeAsync();
+		}
+	}
 }
-

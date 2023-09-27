@@ -2,10 +2,10 @@
 
 public class RemoveStockCategoryAction
 {
-    public int CategoryId { get; }
+    public string Sku { get; }
 
-    public RemoveStockCategoryAction(int categoryId)
+    public RemoveStockCategoryAction(string sku)
     {
-        CategoryId = categoryId;
+        Sku = sku;
     }
 }

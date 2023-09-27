@@ -1,12 +1,12 @@
-﻿using StockManagementWebsite.Shared;
+﻿using StockManagementWebsite.Shared.StockItems;
 
 namespace StockManagementWebsite.Client.Features.StockItems.Store.Actions;
 
-public class StockItemAddedSuccessfullyAction
+public class StockItemAddedAction
 {
     public StockItemDto AddedItem { get; }
 
-    public StockItemAddedSuccessfullyAction(StockItemDto addedItem)
+    public StockItemAddedAction(StockItemDto addedItem)
     {
         AddedItem = addedItem;
     }

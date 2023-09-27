@@ -48,13 +48,13 @@ public class ProductsController : ControllerBase
 			var salesProduct = salesProducts.Products.SingleOrDefault(x => x.Sku == catalogueProduct.Sku);
 			var warehouseProduct = warehouseProducts.Products.SingleOrDefault(x => x.Sku == catalogueProduct.Sku);
 
-			if (salesProduct is not null && warehouseProduct is not null)
+			if (salesProduct is not null)
 			{
 				var composedProduct = new ProductDto(
 					catalogueProduct.Sku,
 					catalogueProduct.Name,
 					salesProduct.Cost,
-					warehouseProduct.Quantity);
+					warehouseProduct?.Quantity ?? 0);
 
 				composedProducts.Add(composedProduct);
 			}

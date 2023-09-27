@@ -1,12 +1,12 @@
-﻿using StockManagementWebsite.Shared;
+﻿using StockManagementWebsite.Shared.StockItems;
 
 namespace StockManagementWebsite.Client.Features.StockItems.Store.Actions;
 
-public class FetchStockItemsResultAction
+public class FetchStockItemResultAction
 {
     public IEnumerable<StockItemDto> StockItems { get; }
 
-    public FetchStockItemsResultAction(IEnumerable<StockItemDto> stockItems)
+    public FetchStockItemResultAction(IEnumerable<StockItemDto> stockItems)
     {
         StockItems = stockItems;
     }

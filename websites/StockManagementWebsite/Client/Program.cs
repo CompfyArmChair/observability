@@ -21,9 +21,8 @@ builder.Services.AddBlazorWasmTelemetry(builder.Configuration);
 var currentAssembly = typeof(Program).Assembly;
 builder.Services.AddFluxor(options =>
 {
-options.ScanAssemblies(currentAssembly);
-options.UseReduxDevTools();
-
+    options.ScanAssemblies(currentAssembly);
+    options.UseReduxDevTools();
 });
 
 await builder.Build().RunAsync();

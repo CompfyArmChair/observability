@@ -1,6 +1,6 @@
 ﻿using Fluxor;
 using StockManagementWebsite.Client.Features.StockItems.Store.Actions;
-using StockManagementWebsite.Shared;
+using StockManagementWebsite.Shared.StockItems;
 using System.Net.Http.Json;
 
 namespace StockManagementWebsite.Client.Features.StockItems.Store;
@@ -11,38 +11,30 @@ public class Effects
 
     public Effects(HttpClient client) => _httpClient = client;
 
-    [EffectMethod(typeof(FetchStockItemsForSkuAction))]
-    public async Task HandleFetchStockItemsForSkuAction(FetchStockItemsForSkuAction action, IDispatcher dispatcher)
+    [EffectMethod]
+    public async Task HandleFetchStockItemForSkuAction(FetchStockItemForSkuAction action, IDispatcher dispatcher)
     {
-        var stockItems = await _httpClient.GetFromJsonAsync<IEnumerable<StockItemDto>>($"api/StockItems/{action.Sku}")
-            ?? Enumerable.Empty<StockItemDto>();
+        var stockItems = await _httpClient.GetFromJsonAsync<StockItemDto[]>($"api/StockItems/{action.Sku}")
+            ?? Array.Empty<StockItemDto>();
 
-        dispatcher.Dispatch(new FetchStockItemsResultAction(stockItems));
+        dispatcher.Dispatch(new FetchStockItemResultAction(stockItems));
     }
 
-    [EffectMethod(typeof(AddStockItemAction))]
+    [EffectMethod]
     public async Task HandleAddStockItemAction(AddStockItemAction action, IDispatcher dispatcher)
     {
         var response = await _httpClient.PostAsJsonAsync("api/StockItems", action.StockItemToAdd);
+        
+        //var addedItem = await response.Content.ReadFromJsonAsync<StockItemDto>();
+        //dispatcher.Dispatch(new StockItemAddedAction(addedItem));
 
-        if (response.IsSuccessStatusCode)
-        {
-            // Handle success - for example, dispatch another action to fetch the updated list of stock items.
-            var addedItem = await response.Content.ReadFromJsonAsync<StockItemDto>();
-            dispatcher.Dispatch(new StockItemAddedSuccessfullyAction(addedItem));
-        }
-        else
-        {
-            // Handle failure - for example, show an error message or dispatch a failure action.
-        }
     }
 
-    [EffectMethod(typeof(FetchStockItemsAction))]
-    public async Task HandleFetchStockItemsAction(IDispatcher dispatcher)
+    [EffectMethod]
+    public async Task HandleDeleteStockItemAction(DeleteStockItemAction action, IDispatcher dispatcher)
     {
-        var stockItems = await _httpClient.GetFromJsonAsync<IEnumerable<StockItemDto>>("api/StockItems")
-            ?? Enumerable.Empty<StockItemDto>();
-
-        dispatcher.Dispatch(new FetchStockItemsResultAction(stockItems));
+        await _httpClient.DeleteAsync($"api/StockItems/{action.Id}");
+        
+        dispatcher.Dispatch(new StockItemDeletedResultAction(action.Id));
     }
 }

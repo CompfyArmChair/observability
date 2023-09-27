@@ -1,4 +1,4 @@
-﻿using StockManagementWebsite.Shared;
+﻿using StockManagementWebsite.Shared.StockCategories;
 
 namespace StockManagementWebsite.Client.Features.StockCategory.Store.Actions;
 

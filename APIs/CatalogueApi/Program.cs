@@ -1,19 +1,21 @@
 global using FastEndpoints;
-using FastEndpoints.Swagger;
 using CatalogueApi.Data;
+using FastEndpoints.Swagger;
+using MassTransit;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
-using Microsoft.Data.SqlClient;
 using Shared.Instrumentation;
-using Microsoft.ApplicationInsights.Extensibility;
-using CatalogueApi;
-using MassTransit;
+using Shared.ServiceBus;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<CatalogueDbContext>(options =>
   options.UseSqlServer(builder.Configuration.GetConnectionString("Database")));
+
+builder.Services.AddMassTransit(config =>
+    config.AddDefault("CatalogueApi", builder.Configuration.GetConnectionString("ServiceBus")!));
 
 builder.Services.AddOpenTelemetry("CatalogueApi", builder.Configuration.GetConnectionString("ApplicationInsights")!);
 //builder.Services.AddSingleton<ITelemetryInitializer, TelemetryInitializer>();

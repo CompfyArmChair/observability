@@ -1,7 +1,6 @@
-﻿namespace StockManagementWebsite.Shared;
+﻿namespace StockManagementWebsite.Shared.StockCategories;
 
 public record EditStockCategoryDto(
-    int Id,
     string Sku,
     string Name,
     decimal Cost);

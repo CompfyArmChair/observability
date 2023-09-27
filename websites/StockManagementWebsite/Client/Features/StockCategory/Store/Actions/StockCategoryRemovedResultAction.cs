@@ -1,13 +1,11 @@
-﻿using StockManagementWebsite.Shared;
-
-namespace StockManagementWebsite.Client.Features.StockCategory.Store.Actions;
+﻿namespace StockManagementWebsite.Client.Features.StockCategory.Store.Actions;
 
 public class StockCategoryRemovedResultAction
 {
-	public int RemovedCategoryId { get; }
+	public string Sku { get; }
 
-	public StockCategoryRemovedResultAction(int removedCategoryId)
+	public StockCategoryRemovedResultAction(string sku)
 	{
-		RemovedCategoryId = removedCategoryId;
+		Sku = sku;
 	}
 }

@@ -1,14 +1,13 @@
 global using FastEndpoints;
 using FastEndpoints.Swagger;
-using SalesApi.Data;
+using MassTransit;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
-using Microsoft.Data.SqlClient;
+using SalesApi.Data;
 using Shared.Instrumentation;
-using Microsoft.ApplicationInsights.Extensibility;
-using Salespi;
-using MassTransit;
+using Shared.ServiceBus;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +15,9 @@ builder.Services.AddDbContext<SalesDbContext>(options =>
   options.UseSqlServer(builder.Configuration.GetConnectionString("Database")));
 
 builder.Services.AddOpenTelemetry("SaleApi", builder.Configuration.GetConnectionString("ApplicationInsights")!);
+
+builder.Services.AddMassTransit(config =>
+    config.AddDefault("SaleApi", builder.Configuration.GetConnectionString("ServiceBus")!));
 
 //builder.Services.AddSingleton<ITelemetryInitializer, TelemetryInitializer>();
 

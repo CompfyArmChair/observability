@@ -1,10 +1,10 @@
 ﻿namespace StockManagementWebsite.Client.Features.StockItems.Store.Actions;
 
-public class FetchStockItemsForSkuAction
+public class FetchStockItemForSkuAction
 {
     public string Sku { get; }
 
-    public FetchStockItemsForSkuAction(string sku)
+    public FetchStockItemForSkuAction(string sku)
     {
         Sku = sku;
     }

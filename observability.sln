@@ -45,6 +45,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "shop-website", "shop-websit
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "stock-management-website", "stock-management-website", "{DE46FD16-22FA-43B8-82D8-BE2705FECCB7}"
+	ProjectSection(SolutionItems) = preProject
+		websites\StockManagementWebsite\Dockerfile = websites\StockManagementWebsite\Dockerfile
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StockManagementWebsite.Server", "websites\StockManagementWebsite\Server\StockManagementWebsite.Server.csproj", "{284F85EF-6726-42DC-A38D-7B53816E977C}"
 EndProject

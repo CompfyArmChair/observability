@@ -1,4 +1,4 @@
-﻿@using StockManagementWebsite.Shared;
+﻿@using StockManagementWebsite.Shared.StockCategories;
 @inject ISnackbar Snackbar
 @inject IDialogService DialogService
 
@@ -30,8 +30,7 @@
             Snackbar.Add("Please fill out the SKU and Name before adding a stock.", Severity.Error);
             return;
         }
-
-        Snackbar.Add("Stock category added successfully.", Severity.Success);
+        
         MudDialog.Close(DialogResult.Ok<AddStockCategoryDto>(new(Sku, Name, Cost)));
     }
 }

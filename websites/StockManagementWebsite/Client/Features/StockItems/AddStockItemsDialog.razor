@@ -1,0 +1,25 @@
+﻿@using StockManagementWebsite.Shared;
+@inject IDialogService DialogService
+
+<MudDialog>
+    <DialogContent>
+        <MudNumericField @bind-Value="Quantity" Label="Quantity" Class="mr-2"></MudNumericField>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Secondary" OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="AddStockItems">Add</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; } = default!;    
+
+    private int Quantity = 0;
+
+    void Cancel() => MudDialog.Cancel();
+
+    private void AddStockItems()
+    {
+        MudDialog.Close(DialogResult.Ok<int>(Quantity));
+    }
+}
