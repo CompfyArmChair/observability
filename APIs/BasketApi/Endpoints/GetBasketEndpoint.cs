@@ -2,16 +2,19 @@
 using BasketApi.Data;
 using BasketApi.Data.Models;
 using BasketApi.Endpoints.Dtos;
+using BasketApi.Instrumentation;
 using Microsoft.EntityFrameworkCore;
 
 namespace BasketApi.Endpoints;
 
 public class GetBasketEndpoint : Endpoint<GetBasketRequest, GetBasketResponse, GetBasketBasketMapper>
 {
-    private readonly BasketDbContext _dbContext;
+	private readonly BasketDbContext _dbContext;
 
-    public GetBasketEndpoint(BasketDbContext dbContext) =>
+    public GetBasketEndpoint(BasketDbContext dbContext)
+    {
         _dbContext = dbContext;
+	}
 
     public override void Configure()
     {

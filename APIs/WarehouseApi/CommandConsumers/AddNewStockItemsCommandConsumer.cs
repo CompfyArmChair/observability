@@ -4,15 +4,19 @@ using Shared.ServiceBus.Events;
 using WarehouseApi.Data;
 using WarehouseApi.Data.Models;
 using WarehouseApi.Enums;
+using WarehouseApi.Instrumentation;
 
 namespace WarehouseApi.CommandConsumers;
 
 public class AddNewStockItemsCommandConsumer : IConsumer<AddNewStockItemsCommand>
 {
     private readonly WarehouseDbContext _dbContext;
-    public AddNewStockItemsCommandConsumer(WarehouseDbContext dbContext)
+	private readonly OtelMeters _meters;
+
+    public AddNewStockItemsCommandConsumer(WarehouseDbContext dbContext, OtelMeters meters)
     {
         _dbContext = dbContext;
+		_meters = meters;
     }
 
     public async Task Consume(ConsumeContext<AddNewStockItemsCommand> context)
@@ -36,5 +40,7 @@ public class AddNewStockItemsCommandConsumer : IConsumer<AddNewStockItemsCommand
 		await _dbContext.SaveChangesAsync();
 
 		await context.Publish(new StockSkuChangedEvent() { Sku = message.Sku });
+		_meters.AddStock(message.Quantity);
+		_meters.IncreaseTotalStock(message.Quantity);
 	}
 }

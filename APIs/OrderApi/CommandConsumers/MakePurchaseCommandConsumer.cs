@@ -2,6 +2,7 @@
 using OrderApi.Data;
 using OrderApi.Data.Models;
 using OrderApi.Enums;
+using OrderApi.Instrumentation;
 using Shared.ServiceBus.Commands;
 
 namespace BasketApi.CommandConsumers;
@@ -9,10 +10,12 @@ namespace BasketApi.CommandConsumers;
 public class MakePurchaseCommandConsumer : IConsumer<MakePurchaseCommand>
 {
 	private readonly OrderDbContext _dbContext;
+	private readonly OtelMeters _meters;
 
-	public MakePurchaseCommandConsumer(OrderDbContext dbContext)
+	public MakePurchaseCommandConsumer(OrderDbContext dbContext, OtelMeters meters)
 	{
 		_dbContext = dbContext;
+		_meters = meters;
 	}
 
 	public async Task Consume(ConsumeContext<MakePurchaseCommand> context)
@@ -21,6 +24,7 @@ public class MakePurchaseCommandConsumer : IConsumer<MakePurchaseCommand>
 
 		var newPurchase = new OrderEntity()
 		{
+			CustomerReference = $"{DateTime.UtcNow:yyMMddTHHmmss}-{message.Basket.BasketId}",
 			Email = message.Email,
 			FirstName = message.FirstName,
 			LastName = message.LastName,
@@ -43,6 +47,9 @@ public class MakePurchaseCommandConsumer : IConsumer<MakePurchaseCommand>
 		_dbContext.Orders.Add(newPurchase);
 
 		await _dbContext.SaveChangesAsync();
+		_meters.AddOrder();
+		_meters.IncreaseOrders();
+		_meters.RecordNumberOfProducts(newPurchase.ProductEntities.Count());
 
 		await Task.WhenAll(
 			context.Send(new Uri("queue:EmailApi"), new SendMailCommand() 
@@ -50,8 +57,9 @@ public class MakePurchaseCommandConsumer : IConsumer<MakePurchaseCommand>
 				Firstname = message.FirstName,
 				Lastname = message.LastName,
 				Email = message.Email,
-				Subject = "Order Recieved",
-				Body = $"Hello {message.FirstName}, your order has been recieved"
+				Reference = newPurchase.CustomerReference,
+				Subject = "Order Received",
+				Body = $"Hello {message.FirstName}, your order has been received. Reference: {newPurchase.CustomerReference}"
 			}),
 			context.Send(new Uri("queue:BasketApi"), new ClearBasketCommand() { BasketId = message.Basket.BasketId }),
 			context.Send(new Uri("queue:WarehouseApi"), new ReserveStockCommand() 
@@ -69,6 +77,7 @@ public class MakePurchaseCommandConsumer : IConsumer<MakePurchaseCommand>
 			context.Send(new Uri("queue:BillingApi"), new BillCustomerCommand()
 			{
 				OrderId = newPurchase.Id,
+				CustomerReference = newPurchase.CustomerReference,
 				Email = message.Email,
 				FirstName = message.FirstName,
 				LastName = message.LastName,

@@ -1,5 +1,4 @@
 ﻿using BasketApi.Data;
-using BasketApi.Data.Models;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Shared.ServiceBus.Commands;

@@ -1,6 +1,7 @@
 ﻿using BillingApi.Data;
 using BillingApi.Data.Models;
 using BillingApi.Enums;
+using BillingApi.Instrumentation;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Shared.ServiceBus.Commands;
@@ -11,10 +12,12 @@ namespace BillingApi.CommandConsumers;
 public class BillCustomerCommandConsumer : IConsumer<BillCustomerCommand>
 {
 	private readonly BillingDbContext _dbContext;
+	private readonly OtelMeters _meters;
 
-	public BillCustomerCommandConsumer(BillingDbContext dbContext)
+	public BillCustomerCommandConsumer(BillingDbContext dbContext, OtelMeters meters)
 	{
 		_dbContext = dbContext;
+		_meters = meters;
 	}
 
 	public async Task Consume(ConsumeContext<BillCustomerCommand> context)
@@ -43,6 +46,12 @@ public class BillCustomerCommandConsumer : IConsumer<BillCustomerCommand>
 				purchase.Status = externalApiResult ? Status.Successful : Status.Failed;
 				await _dbContext.SaveChangesAsync();
 
+				if(purchase.Status == Status.Successful)
+				{
+					_meters.CompleteBilling();
+					_meters.IncreaseTotalBillingsCompleted();
+				}
+
 				await context.Publish(new OrderBilledEvent()
 				{
 					OrderId = message.OrderId,
@@ -67,6 +76,9 @@ public class BillCustomerCommandConsumer : IConsumer<BillCustomerCommand>
 				});
 
 			await _dbContext.SaveChangesAsync();
+			_meters.AddBilling();
+			_meters.IncreaseTotalBillings();
+
 		}
 	}
 

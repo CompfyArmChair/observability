@@ -1,4 +1,5 @@
 ﻿using CatalogueApi.Data;
+using CatalogueApi.Instrumentation;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Shared.ServiceBus.Commands;
@@ -9,11 +10,13 @@ namespace CatalogueApi.CommandConsumers;
 public class DeleteCatalogueItemCommandConsumer : IConsumer<DeleteCatalogueItemCommand>
 {
     private readonly CatalogueDbContext _dbContext;
+    private readonly OtelMeters _meters;
 
-    public DeleteCatalogueItemCommandConsumer(CatalogueDbContext dbContext)
+    public DeleteCatalogueItemCommandConsumer(CatalogueDbContext dbContext, OtelMeters meters)
     {
         _dbContext = dbContext;
-    }
+		_meters = meters;
+	}
 
     public async Task Consume(ConsumeContext<DeleteCatalogueItemCommand> context)
     {
@@ -24,5 +27,7 @@ public class DeleteCatalogueItemCommandConsumer : IConsumer<DeleteCatalogueItemC
         _dbContext.Remove(existingItem);
         await _dbContext.SaveChangesAsync();
 		await context.Publish(new CategoriesChangedEvent());
+		_meters.DeleteCategory();
+		_meters.DecreaseTotalCategories();
 	}
 }

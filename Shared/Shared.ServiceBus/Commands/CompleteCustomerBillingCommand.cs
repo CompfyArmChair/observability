@@ -2,5 +2,5 @@
 
 public class CompleteCustomerBillingCommand
 {
-    public int OrderId { get; set; }
+    public Guid OrderId { get; set; }
 }

@@ -1,20 +1,23 @@
-﻿using ShippingApi.Data.Models;
-using ShippingApi.Data;
-using Shared.ServiceBus.Commands;
-using MassTransit;
+﻿using MassTransit;
 using Microsoft.EntityFrameworkCore;
-using ShippingApi.Enums;
+using Shared.ServiceBus.Commands;
 using Shared.ServiceBus.Events;
+using ShippingApi.Data;
+using ShippingApi.Data.Models;
+using ShippingApi.Enums;
+using ShippingApi.Instrumentation;
 
 namespace ShippingApi.CommandConsumers;
 
 public class ShipPurchaseCommandConsumer : IConsumer<ShipPurchaseCommand>
 {
 	private readonly ShippingDbContext _dbContext;
+	private readonly OtelMeters _meters;
 
-	public ShipPurchaseCommandConsumer(ShippingDbContext dbContext)
+	public ShipPurchaseCommandConsumer(ShippingDbContext dbContext, OtelMeters meters)
 	{
 		_dbContext = dbContext;
+		_meters = meters;
 	}
 
 	public async Task Consume(ConsumeContext<ShipPurchaseCommand> context)
@@ -40,6 +43,8 @@ public class ShipPurchaseCommandConsumer : IConsumer<ShipPurchaseCommand>
 					{
 						OrderId = message.OrderId,
 					});
+					_meters.CompleteShipment();
+					_meters.IncreaseTotalShipmentsCompleted();
 				}
 			}
 		}
@@ -56,6 +61,8 @@ public class ShipPurchaseCommandConsumer : IConsumer<ShipPurchaseCommand>
 			});
 
 			await _dbContext.SaveChangesAsync();
+			_meters.AddShipment();
+			_meters.IncreaseTotalShipments();
 		}
 	}
 	

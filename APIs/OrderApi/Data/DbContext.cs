@@ -13,11 +13,13 @@ public class OrderDbContext : DbContext
     public DbSet<ProductEntity> ProductEntities { get; set; }
 
 	protected override void OnModelCreating(ModelBuilder modelBuilder)
-	{
-		modelBuilder.Entity<OrderEntity>()
-			.ToTable("orders", schema: "order");
+    {
+        modelBuilder.Entity<OrderEntity>()
+            .ToTable("orders", schema: "order")
+            .Property(x => x.Id)
+            .ValueGeneratedNever();
 
-		modelBuilder.Entity<ProductEntity>()
+        modelBuilder.Entity<ProductEntity>()
 			.ToTable("products", schema: "order");
 
 		modelBuilder.Entity<ProductEntity>()

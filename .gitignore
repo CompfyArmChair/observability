@@ -399,3 +399,5 @@ FodyWeavers.xsd
 
 # Docker Volumes
 drive
+/.env
+/websites/ShopWebsite/Client/wwwroot/index.html

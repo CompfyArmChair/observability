@@ -1,5 +1,6 @@
 using MassTransit;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Instrumentation;
 using Shared.ServiceBus.Commands;
 using ShopWebsite.Shared;
 
@@ -24,12 +25,17 @@ namespace ShopWebsite.Server.Controllers
         {
 			var response = await _httpClient.GetAsync($"{_basketApiBaseUrl}/Basket/{id}");
 			var basketResponse = await response.Content.ReadFromJsonAsync<GetBasketResponse>();            
+
+            TelemetryBaggageHandler.AddBaggageFrom(basketResponse!.Basket);
 			return Ok(basketResponse!.Basket);
         }
 
         [HttpPost("{BasketId}/Product")]
         public async Task<IActionResult> Add([FromRoute] int basketId, ProductDto product)
         {
+            TelemetryBaggageHandler.AddBaggage("shopwebsite.basket.id", basketId.ToString());
+            TelemetryBaggageHandler.AddBaggageFrom(product);
+
             var sendEndpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri("queue:basketApi"));
 
 			await sendEndpoint.Send(new AddProductToBasketCommand()
@@ -38,7 +44,7 @@ namespace ShopWebsite.Server.Controllers
                 Cost = product.Cost,
                 Name = product.Name,
                 Quantity = product.Quantity,
-                Sku = product.Sku,                
+                Sku = product.Sku
 			});
 			
             return Ok();
@@ -47,6 +53,7 @@ namespace ShopWebsite.Server.Controllers
         [HttpPost("Remove")]
         public IActionResult Remove(ProductDto product)
         {
+            TelemetryBaggageHandler.AddBaggageFrom(product);
             return Ok();
         }
     }

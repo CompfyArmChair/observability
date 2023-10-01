@@ -1,15 +1,15 @@
 global using FastEndpoints;
 using FastEndpoints.Swagger;
-using WarehouseApi.Data;
+using MassTransit;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
-using Microsoft.Data.SqlClient;
-using MassTransit;
-using Shared.ServiceBus;
 using Shared.Instrumentation;
-using Microsoft.ApplicationInsights.Extensibility;
-using WarehouseApi;
+using Shared.Instrumentation.MassTransit;
+using Shared.ServiceBus;
+using WarehouseApi.Data;
+using WarehouseApi.Instrumentation;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,9 +17,15 @@ builder.Services.AddDbContext<WarehouseDbContext>(options =>
   options.UseSqlServer(builder.Configuration.GetConnectionString("Database")));
 
 builder.Services.AddMassTransit(config =>
-	config.AddDefault("WarehouseApi", builder.Configuration.GetConnectionString("ServiceBus")!));
+	config.AddDefault(
+		"WarehouseApi", 
+		builder.Configuration.GetConnectionString("ServiceBus")!, 
+		(context, configurator) => configurator.UseSendAndPublishFilter(typeof(TelemetrySendFilter<>), context)));
 
-builder.Services.AddOpenTelemetry("WarehouseApi", builder.Configuration.GetConnectionString("ApplicationInsights")!);
+builder.Services.AddOpenTelemetry(
+	"WarehouseApi", 
+	builder.Configuration.GetConnectionString("ApplicationInsights")!,
+	new OtelMetricsConfiguration<OtelMeters>(new OtelMeters()));
 //builder.Services.AddSingleton<ITelemetryInitializer, TelemetryInitializer>();
 
 builder.Services.AddSwaggerDoc();

@@ -4,6 +4,6 @@ namespace BillingApi.Endpoints.Dtos;
 
 public record PurchaseDto(
     int Id,
-    int OrderId,
+    Guid OrderId,
     decimal Amount,
     Status Status);

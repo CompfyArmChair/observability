@@ -1,4 +1,5 @@
-﻿using MassTransit;
+﻿using EmailApi.Instrumentation;
+using MassTransit;
 using MimeKit;
 using Shared.ServiceBus.Commands;
 using SmtpClient = MailKit.Net.Smtp.SmtpClient;
@@ -7,7 +8,13 @@ namespace EmailApi.CommandConsumers;
 
 public class SendMailCommandConsumer : IConsumer<SendMailCommand>
 {
-	public async Task Consume(ConsumeContext<SendMailCommand> context)
+	private readonly OtelMeters _meters;
+    public SendMailCommandConsumer(OtelMeters meters)
+    {
+		_meters = meters;
+    }
+
+    public async Task Consume(ConsumeContext<SendMailCommand> context)
 	{
 		var message = context.Message;
 
@@ -31,5 +38,7 @@ public class SendMailCommandConsumer : IConsumer<SendMailCommand>
 		await client.SendAsync(emailMessage);
 		
 		await client.DisconnectAsync(true);
+
+		_meters.EmailSent();
 	}
 }

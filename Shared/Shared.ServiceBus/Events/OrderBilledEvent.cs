@@ -2,5 +2,5 @@
 
 public class OrderBilledEvent
 {
-	public int OrderId { get; set; }
+	public Guid OrderId { get; set; }
 }

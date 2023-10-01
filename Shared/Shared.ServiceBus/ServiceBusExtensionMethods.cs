@@ -6,7 +6,7 @@ namespace Shared.ServiceBus
 {
 	public static class ServiceBusExtensionMethods
 	{
-		public static void AddDefault(this IBusRegistrationConfigurator config, string serviceName, string connectionString)
+		public static void AddDefault(this IBusRegistrationConfigurator config, string serviceName, string connectionString, Action<IBusRegistrationContext, IServiceBusBusFactoryConfigurator>? configure = null)
 		{
 			Assembly[] assemblies = GetConsumerAssemblies();
 			config.AddConsumers(assemblies);
@@ -32,6 +32,8 @@ namespace Shared.ServiceBus
 
 				asbCfg.ConfigureEndpoints(context);
 				asbCfg.MaxAutoRenewDuration = TimeSpan.FromMinutes(30.0);
+
+				configure?.Invoke(context, asbCfg);
 			});
 
 			static Assembly[] GetConsumerAssemblies()
@@ -51,6 +53,15 @@ namespace Shared.ServiceBus
 
 				return list.Distinct().ToArray();
 			}
-		}		
-	}
+		}
+
+        public static IServiceBusBusFactoryConfigurator UseSendAndPublishFilter(
+            this IServiceBusBusFactoryConfigurator serviceBusBusFactoryConfigurator, Type type,
+            IBusRegistrationContext context)
+        {
+            serviceBusBusFactoryConfigurator.UseSendFilter(type, context);
+            serviceBusBusFactoryConfigurator.UsePublishFilter(type, context);
+            return serviceBusBusFactoryConfigurator;
+        }
+    }
 }

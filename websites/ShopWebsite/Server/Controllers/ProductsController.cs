@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Identity.Client;
+using Shared.Instrumentation;
 using ShopWebsite.Shared;
 
 namespace ShopWebsite.Server.Controllers;
@@ -59,6 +61,8 @@ public class ProductsController : ControllerBase
 				composedProducts.Add(composedProduct);
 			}
 		}
+
+		TelemetryBaggageHandler.AddBaggage("shopwebsite.products.count", composedProducts.Count);
 		return composedProducts;
 	}
 }

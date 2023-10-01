@@ -1,6 +1,8 @@
-﻿using AutoMapper;
+﻿using System.Diagnostics;
+using AutoMapper;
 using MassTransit;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Instrumentation;
 using Shared.ServiceBus.Commands;
 using ShopWebsite.Shared;
 
@@ -9,12 +11,12 @@ namespace ShopWebsite.Server.Controllers
 	[ApiController]
 	[Route("api/[controller]")]
 	public class PurchaseController : ControllerBase
-	{
+    {
 		private readonly ISendEndpointProvider _sendEndpointProvider;
 		private readonly IMapper _mapper;
 
 		public PurchaseController(ISendEndpointProvider sendEndpointProvider)
-		{			
+		{
 			_sendEndpointProvider = sendEndpointProvider;
 
 			var configuration = new MapperConfiguration(cfg =>
@@ -32,13 +34,15 @@ namespace ShopWebsite.Server.Controllers
 		[HttpPost("Checkout")]
 		public async Task<IActionResult> Checkout(PurchaseDto purchase)
 		{
-			var sendEndpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri("queue:orderApi"));
+            TelemetryBaggageHandler.AddBaggageFrom(purchase.Basket);
 
-			var command = _mapper.Map<MakePurchaseCommand>(purchase);
+            var sendEndpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri("queue:orderApi"));
 
-			await sendEndpoint.Send(command);
+            var command = _mapper.Map<MakePurchaseCommand>(purchase);
 
-			return Ok();			
+            await sendEndpoint.Send(command);
+
+            return Ok();			
 		}
-	}
+    }
 }

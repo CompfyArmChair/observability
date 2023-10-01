@@ -1,15 +1,20 @@
 ﻿using BasketApi.Data;
+using BasketApi.Instrumentation;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics.Metrics;
 
 namespace BasketApi.Endpoints;
 
 public class CompleteBasketEndpoint : Endpoint<CompleteBasketRequest, EmptyResponse>
 {
     private readonly BasketDbContext _dbContext;
+	private readonly OtelMeters _meter;
 
-    public CompleteBasketEndpoint(BasketDbContext dbContext) =>
+	public CompleteBasketEndpoint(BasketDbContext dbContext, OtelMeters meter)
+    {
         _dbContext = dbContext;
-
+        _meter = meter;
+	}
 
     public override void Configure()
     {
@@ -29,9 +34,10 @@ public class CompleteBasketEndpoint : Endpoint<CompleteBasketRequest, EmptyRespo
         {
             _dbContext.RemoveRange(products);
             await _dbContext.SaveChangesAsync();
-        }
+		}
+        _meter.BasketCompleted();
 
-        await SendNoContentAsync();
+		await SendNoContentAsync();
     }
 }
 

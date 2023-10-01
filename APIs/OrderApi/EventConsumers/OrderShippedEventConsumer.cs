@@ -1,6 +1,7 @@
 ﻿using MassTransit;
 using OrderApi.Data;
 using OrderApi.Enums;
+using OrderApi.Instrumentation;
 using Shared.ServiceBus.Commands;
 using Shared.ServiceBus.Events;
 
@@ -9,9 +10,13 @@ namespace OrderApi.EventConsumers;
 public class OrderShippedEventConsumer : IConsumer<OrderBilledEvent>
 {
 	private readonly OrderDbContext _dbContext;
+	private readonly OtelMeters _meters;
 
-	public OrderShippedEventConsumer(OrderDbContext dbContext)
-		=> _dbContext = dbContext;
+	public OrderShippedEventConsumer(OrderDbContext dbContext, OtelMeters meters)
+	{
+		_dbContext = dbContext;
+		_meters = meters;
+	}
 
 	public async Task Consume(ConsumeContext<OrderBilledEvent> context)
 	{
@@ -36,5 +41,7 @@ public class OrderShippedEventConsumer : IConsumer<OrderBilledEvent>
 		});
 
 		await _dbContext.SaveChangesAsync();
+		_meters.ShippedOrder();
+		_meters.IncreaseShippedOrders();
 	}
 }

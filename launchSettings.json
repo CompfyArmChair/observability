@@ -3,16 +3,19 @@
     "Docker Compose": {
       "commandName": "DockerCompose",
       "commandVersion": "1.0",
+      "composeLaunchServiceName": "shopwebsite.server",
       "serviceActions": {
-        "basketapi": "StartDebugging",
-        "billingapi": "StartDebugging",
-        "catalogueapi": "StartDebugging",
-        "emailapi": "StartDebugging",
-        "orderapi": "StartDebugging",
-        "salesapi": "StartDebugging",
-        "shippingapi": "StartDebugging",
-        "warehouseapi": "StartDebugging",
-        "shopwebsite.server": "StartDebugging"
+        "basketapi": "StartWithoutDebugging",
+        "billingapi": "StartWithoutDebugging",
+        "catalogueapi": "StartWithoutDebugging",
+        "emailapi": "StartWithoutDebugging",
+        "orderapi": "StartWithoutDebugging",
+        "salesapi": "StartWithoutDebugging",
+        "shippingapi": "StartWithoutDebugging",
+        "warehouseapi": "StartWithoutDebugging",
+        "shopwebsite.server": "StartWithoutDebugging",
+        "smtp4dev": "StartWithoutDebugging",
+        "sql-server-db": "StartWithoutDebugging"
       }
     }
   }

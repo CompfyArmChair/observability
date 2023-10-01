@@ -5,16 +5,19 @@ using Shared.ServiceBus.Events;
 using ShippingApi.Data;
 using ShippingApi.Data.Models;
 using ShippingApi.Enums;
+using ShippingApi.Instrumentation;
 
 namespace BillingApi.CommandConsumers;
 
 public class CompleteShipPurchaseCommandConsumer : IConsumer<CompleteShipPurchaseCommand>
 {
 	private readonly ShippingDbContext _dbContext;
+	private readonly OtelMeters _meters;
 
-	public CompleteShipPurchaseCommandConsumer(ShippingDbContext dbContext)
+	public CompleteShipPurchaseCommandConsumer(ShippingDbContext dbContext, OtelMeters meters)
 	{
 		_dbContext = dbContext;
+		_meters = meters;
 	}
 
 	public async Task Consume(ConsumeContext<CompleteShipPurchaseCommand> context)
@@ -40,6 +43,8 @@ public class CompleteShipPurchaseCommandConsumer : IConsumer<CompleteShipPurchas
 					{
 						OrderId = message.OrderId,
 					});
+					_meters.CompleteShipment();
+					_meters.IncreaseTotalShipmentsCompleted();
 				}
 			}
 		}
@@ -52,6 +57,9 @@ public class CompleteShipPurchaseCommandConsumer : IConsumer<CompleteShipPurchas
 			});
 
 			await _dbContext.SaveChangesAsync();
+
+			_meters.AddShipment();
+			_meters.IncreaseTotalShipments();
 		}
 	}
 

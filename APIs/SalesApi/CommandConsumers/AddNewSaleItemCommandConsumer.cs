@@ -1,6 +1,7 @@
 ﻿using MassTransit;
 using SalesApi.Data;
 using SalesApi.Data.Models;
+using SalesApi.Instrumentation;
 using Shared.ServiceBus.Commands;
 
 namespace CatalogueApi.CommandConsumers;
@@ -8,11 +9,13 @@ namespace CatalogueApi.CommandConsumers;
 public class AddNewSaleItemCommandConsumer : IConsumer<AddNewSaleItemCommand>
 {
     private readonly SalesDbContext _dbContext;
+	private readonly OtelMeters _meters;
 
-    public AddNewSaleItemCommandConsumer(SalesDbContext dbContext)
+	public AddNewSaleItemCommandConsumer(SalesDbContext dbContext, OtelMeters meters)
     {
         _dbContext = dbContext;
-    }
+		_meters = meters;
+	}
 
     public async Task Consume(ConsumeContext<AddNewSaleItemCommand> context)
     {
@@ -26,5 +29,6 @@ public class AddNewSaleItemCommandConsumer : IConsumer<AddNewSaleItemCommand>
 
         _dbContext.Add(newProduct);
         await _dbContext.SaveChangesAsync();
+        _meters.AddPrice();        
     }
 }

@@ -2,7 +2,7 @@
 
 public class ReserveStockCommand
 {
-	public int OrderId { get; set; }
+	public Guid OrderId { get; set; }
 	public ReservedStock[] Stock { get; set; } = Array.Empty<ReservedStock>();
 }
 

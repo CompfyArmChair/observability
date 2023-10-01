@@ -1,4 +1,5 @@
 ﻿using CatalogueApi.Data;
+using CatalogueApi.Instrumentation;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Shared.ServiceBus.Commands;
@@ -9,10 +10,12 @@ namespace CatalogueApi.CommandConsumers;
 public class EditCatalogueItemCommandConsumer : IConsumer<EditCatalogueItemCommand>
 {
     private readonly CatalogueDbContext _dbContext;
-    public EditCatalogueItemCommandConsumer(CatalogueDbContext dbContext)
+	private readonly OtelMeters _meters;
+	public EditCatalogueItemCommandConsumer(CatalogueDbContext dbContext, OtelMeters meters)
     {
         _dbContext = dbContext;
-    }
+		_meters = meters;
+	}
 
     public async Task Consume(ConsumeContext<EditCatalogueItemCommand> context)
     {
@@ -24,5 +27,6 @@ public class EditCatalogueItemCommandConsumer : IConsumer<EditCatalogueItemComma
 
         await _dbContext.SaveChangesAsync();
 		await context.Publish(new CategoriesChangedEvent());
+		_meters.UpdateCategory();
 	}
 }

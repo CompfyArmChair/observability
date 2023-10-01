@@ -1,11 +1,13 @@
 global using FastEndpoints;
 using CatalogueApi.Data;
+using CatalogueApi.Instrumentation;
 using FastEndpoints.Swagger;
 using MassTransit;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.Extensions.DependencyInjection;
 using Shared.Instrumentation;
 using Shared.ServiceBus;
 
@@ -15,9 +17,14 @@ builder.Services.AddDbContext<CatalogueDbContext>(options =>
   options.UseSqlServer(builder.Configuration.GetConnectionString("Database")));
 
 builder.Services.AddMassTransit(config =>
-    config.AddDefault("CatalogueApi", builder.Configuration.GetConnectionString("ServiceBus")!));
+    config.AddDefault(
+		"CatalogueApi", 
+		builder.Configuration.GetConnectionString("ServiceBus")!));
 
-builder.Services.AddOpenTelemetry("CatalogueApi", builder.Configuration.GetConnectionString("ApplicationInsights")!);
+builder.Services.AddOpenTelemetry(
+	"CatalogueApi", 
+	builder.Configuration.GetConnectionString("ApplicationInsights")!,
+	new OtelMetricsConfiguration<OtelMeters>(new OtelMeters()));
 //builder.Services.AddSingleton<ITelemetryInitializer, TelemetryInitializer>();
 
 builder.Services.AddSwaggerDoc();

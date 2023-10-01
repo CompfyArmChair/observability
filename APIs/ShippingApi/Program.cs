@@ -10,6 +10,8 @@ using Shared.ServiceBus;
 using Shared.Instrumentation;
 using Microsoft.ApplicationInsights.Extensibility;
 using ShippingApi;
+using Shared.Instrumentation.MassTransit;
+using ShippingApi.Instrumentation;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,9 +19,15 @@ builder.Services.AddDbContext<ShippingDbContext>(options =>
   options.UseSqlServer(builder.Configuration.GetConnectionString("Database")));
 
 builder.Services.AddMassTransit(config =>
-	config.AddDefault("ShippingApi", builder.Configuration.GetConnectionString("ServiceBus")!));
+	config.AddDefault(
+		"ShippingApi", 
+		builder.Configuration.GetConnectionString("ServiceBus")!, 
+		(context, configurator) => configurator.UseSendAndPublishFilter(typeof(TelemetrySendFilter<>), context)));
 
-builder.Services.AddOpenTelemetry("ShippingApi", builder.Configuration.GetConnectionString("ApplicationInsights")!);
+builder.Services.AddOpenTelemetry(
+	"ShippingApi", 
+	builder.Configuration.GetConnectionString("ApplicationInsights")!,
+	new OtelMetricsConfiguration<OtelMeters>(new OtelMeters()));
 
 //builder.Services.AddSingleton<ITelemetryInitializer, TelemetryInitializer>();
 

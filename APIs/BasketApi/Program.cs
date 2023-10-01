@@ -8,8 +8,8 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
 using Shared.ServiceBus;
 using Shared.Instrumentation;
-using BasketApi;
-using Microsoft.ApplicationInsights.Extensibility;
+using Shared.Instrumentation.MassTransit;
+using BasketApi.Instrumentation;
 
 var builder = WebApplication.CreateBuilder();
 
@@ -17,9 +17,15 @@ builder.Services.AddDbContext<BasketDbContext>(options =>
   options.UseSqlServer(builder.Configuration.GetConnectionString("Database")));
 
 builder.Services.AddMassTransit(config =>
-	config.AddDefault("BasketApi", builder.Configuration.GetConnectionString("ServiceBus")!));
+	config.AddDefault(
+		"BasketApi", 
+		builder.Configuration.GetConnectionString("ServiceBus")!, 
+		(context, configurator) => configurator.UseSendAndPublishFilter(typeof(TelemetrySendFilter<>), context)));
 
-builder.Services.AddOpenTelemetry("BasketApi", builder.Configuration.GetConnectionString("ApplicationInsights")!);
+builder.Services.AddOpenTelemetry(
+	"BasketApi", 
+	builder.Configuration.GetConnectionString("ApplicationInsights")!,
+	new OtelMetricsConfiguration<OtelMeters>(new OtelMeters()));
 
 //builder.Services.AddSingleton<ITelemetryInitializer, TelemetryInitializer>();
 
