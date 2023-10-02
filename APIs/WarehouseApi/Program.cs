@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
 using Shared.Instrumentation;
 using Shared.Instrumentation.MassTransit;
+using Shared.Instrumentation.Metrics;
 using Shared.ServiceBus;
 using WarehouseApi.Data;
 using WarehouseApi.Instrumentation;

@@ -1,5 +1,5 @@
 ﻿using OpenTelemetry.Metrics;
-using Shared.Instrumentation;
+using Shared.Instrumentation.Metrics;
 using System.Diagnostics.Metrics;
 
 namespace OrderApi.Instrumentation;

@@ -9,8 +9,8 @@ param(
     [Parameter(Mandatory=$false)]
     [string]$memoryLimit = "100m",
 	
-	[Parameter(Mandatory=$false)]
-    [string]$cpuLimit = 0.2,
+    [Parameter(Mandatory=$false)]
+    [float]$cpuLimit = 0.2,
 
     [Parameter(Mandatory=$false)]
     [bool]$restore = $false
@@ -47,13 +47,13 @@ if ($restore) {
 } else {
     switch ($throttleType) {
         "cpu" {
-            docker update --cpus=0.1 $fullContainerName
+            docker update --cpus=$cpuLimit $fullContainerName
         }
         "memory" {
             docker update --memory=$memoryLimit $fullContainerName
         }
         "both" {
-            docker update --cpus=0.1 --memory=$memoryLimit $fullContainerName
+            docker update --cpus=$cpuLimit --memory=$memoryLimit $fullContainerName
         }
     }
     Write-Output "$serviceName has been updated with throttled resources."

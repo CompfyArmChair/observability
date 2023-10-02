@@ -6,7 +6,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
 using SalesApi.Data;
+using SalesApi.Instrumentation;
 using Shared.Instrumentation;
+using Shared.Instrumentation.Metrics;
 using Shared.ServiceBus;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,7 +16,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<SalesDbContext>(options =>
   options.UseSqlServer(builder.Configuration.GetConnectionString("Database")));
 
-builder.Services.AddOpenTelemetry("SaleApi", builder.Configuration.GetConnectionString("ApplicationInsights")!);
+builder.Services.AddOpenTelemetry(
+	"SaleApi", 
+	builder.Configuration.GetConnectionString("ApplicationInsights")!,
+	new OtelMetricsConfiguration<OtelMeters>(new OtelMeters()));
 
 builder.Services.AddMassTransit(config =>
     config.AddDefault("SaleApi", builder.Configuration.GetConnectionString("ServiceBus")!));

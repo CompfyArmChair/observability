@@ -1,10 +1,9 @@
-using MassTransit;
-using Shared.ServiceBus;
-using Shared.Instrumentation;
-using Microsoft.ApplicationInsights.Extensibility;
-using EmailApi;
-using Shared.Instrumentation.MassTransit;
 using EmailApi.Instrumentation;
+using MassTransit;
+using Shared.Instrumentation;
+using Shared.Instrumentation.MassTransit;
+using Shared.Instrumentation.Metrics;
+using Shared.ServiceBus;
 
 var builder = WebApplication.CreateBuilder(args);
 

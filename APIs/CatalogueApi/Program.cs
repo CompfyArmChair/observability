@@ -7,8 +7,8 @@ using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
-using Microsoft.Extensions.DependencyInjection;
 using Shared.Instrumentation;
+using Shared.Instrumentation.Metrics;
 using Shared.ServiceBus;
 
 var builder = WebApplication.CreateBuilder(args);

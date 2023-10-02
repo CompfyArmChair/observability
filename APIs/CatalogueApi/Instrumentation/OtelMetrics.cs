@@ -1,5 +1,4 @@
-﻿using OrderApi.Instrumentation;
-using Shared.Instrumentation;
+﻿using Shared.Instrumentation.Metrics;
 using System.Diagnostics.Metrics;
 
 namespace CatalogueApi.Instrumentation;

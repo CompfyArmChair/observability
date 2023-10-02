@@ -10,6 +10,7 @@ using Shared.ServiceBus;
 using Shared.Instrumentation;
 using Shared.Instrumentation.MassTransit;
 using BasketApi.Instrumentation;
+using Shared.Instrumentation.Metrics;
 
 var builder = WebApplication.CreateBuilder();
 

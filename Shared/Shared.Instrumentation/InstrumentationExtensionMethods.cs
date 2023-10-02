@@ -7,7 +7,7 @@ using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
-using OrderApi.Instrumentation;
+using Shared.Instrumentation.Metrics;
 using System.Diagnostics;
 
 namespace Shared.Instrumentation;
@@ -44,7 +44,7 @@ public static class InstrumentationExtensionMethods
 				.AddEnvironmentVariableDetector();
 		}
 
-		ActivitySource.AddActivityListener(BaggagePropagationActivityListener);
+		//ActivitySource.AddActivityListener(BaggagePropagationActivityListener);
 
 		return services.AddOpenTelemetry()
 			.ConfigureResource(resourceBuilder =>
@@ -66,7 +66,9 @@ public static class InstrumentationExtensionMethods
 					.AddAspNetCoreInstrumentation() //Incoming
 					.AddHttpClientInstrumentation() //Outgoing
 					.AddRuntimeInstrumentation() //Exceptions count, number of thread pools, etc
-					.AddProcessInstrumentation() //CPU, memory etc					
+					.AddProcessInstrumentation() //CPU, memory etc
+					.AddExtendedProcessInstrumentation() //User and system process CPU utilisation
+					.AddExtendedSystemInstrumentation() //System CPU utilisation
 					.AddAzureMonitorMetricExporter(o =>
 					{
 						o.ConnectionString = connectionString;

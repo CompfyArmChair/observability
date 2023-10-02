@@ -1,16 +1,15 @@
 global using FastEndpoints;
 using FastEndpoints.Swagger;
-using ShippingApi.Data;
+using MassTransit;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
-using Microsoft.Data.SqlClient;
-using MassTransit;
-using Shared.ServiceBus;
 using Shared.Instrumentation;
-using Microsoft.ApplicationInsights.Extensibility;
-using ShippingApi;
 using Shared.Instrumentation.MassTransit;
+using Shared.Instrumentation.Metrics;
+using Shared.ServiceBus;
+using ShippingApi.Data;
 using ShippingApi.Instrumentation;
 
 var builder = WebApplication.CreateBuilder(args);

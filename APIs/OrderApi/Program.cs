@@ -1,16 +1,17 @@
 global using FastEndpoints;
 using FastEndpoints.Swagger;
-using OrderApi.Data;
-using Microsoft.EntityFrameworkCore;
-using Shared.ServiceBus;
 using MassTransit;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
-using Microsoft.Data.SqlClient;
+using OrderApi.Data;
+using OrderApi.Instrumentation;
 using Shared.Instrumentation;
 using Shared.Instrumentation.MassTransit;
+using Shared.Instrumentation.Metrics;
+using Shared.ServiceBus;
 using Shared.ServiceBus.Commands;
-using OrderApi.Instrumentation;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -1,4 +1,4 @@
-﻿using Shared.Instrumentation;
+﻿using Shared.Instrumentation.Metrics;
 using System.Diagnostics.Metrics;
 
 namespace ShippingApi.Instrumentation;
