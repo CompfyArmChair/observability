@@ -15,7 +15,7 @@ public class DeleteSaleItemCommandConsumer : IConsumer<DeleteSaleItemCommand>
     {
         _dbContext = dbContext;
 		_meters = meters;
-	}
+    }
 
     public async Task Consume(ConsumeContext<DeleteSaleItemCommand> context)
     {
@@ -26,5 +26,5 @@ public class DeleteSaleItemCommandConsumer : IConsumer<DeleteSaleItemCommand>
         _dbContext.Remove(existingItem);
         await _dbContext.SaveChangesAsync();
         _meters.DeletePrice();
-	}
+    }
 }

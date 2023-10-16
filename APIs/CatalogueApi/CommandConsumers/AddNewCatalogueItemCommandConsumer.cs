@@ -16,7 +16,7 @@ public class AddNewCatalogueItemCommandConsumer : IConsumer<AddNewCatalogueItemC
     {
         _dbContext = dbContext;
 		_meters = meters;
-	}
+    }
 
     public async Task Consume(ConsumeContext<AddNewCatalogueItemCommand> context)
     {

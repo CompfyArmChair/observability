@@ -16,7 +16,7 @@ public class DeleteCatalogueItemCommandConsumer : IConsumer<DeleteCatalogueItemC
     {
         _dbContext = dbContext;
 		_meters = meters;
-	}
+    }
 
     public async Task Consume(ConsumeContext<DeleteCatalogueItemCommand> context)
     {

@@ -16,7 +16,7 @@ public class OrderStockEndpoint : Endpoint<OrderStockRequest, EmptyResponse>
 
     public override void Configure()
     {
-        Post("/Stock/Command/OrderStock");
+        Post("/v2/Stock/Command/OrderStock");
         AllowAnonymous();
     }
 

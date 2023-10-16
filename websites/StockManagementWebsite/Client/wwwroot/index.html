@@ -28,9 +28,15 @@
             ld: -1, // Defines the load delay (in ms) before attempting to load the sdk. -1 = block page load and add to head. (default) = 0ms load after timeout,
             // useXhr: 1, // Use XHR instead of fetch to report failures (if available),
             crossOrigin: "anonymous", // When supplied this will add the provided value as the cross origin attribute on the script tag
-            // onInit: null, // Once the application insights instance has loaded and initialized this callback function will be called with 1 argument -- the sdk instance (DO NOT ADD anything to the sdk.queue -- As they won't get called)
+            onInit: function (sdk) {
+                var telemetryInitializer = (envelope) => {
+                    envelope.tags["ai.cloud.role"] = "StockManagementWebsite.Client";
+                    envelope.tags["ai.cloud.roleInstance"] = "StockManagementWebsite.Client Instance";
+                }
+                sdk.addTelemetryInitializer(telemetryInitializer);
+            },
             cfg: { // Application Insights Configuration
-                connectionString: "InstrumentationKey=4b2a9a84-5647-4e48-9d75-455bcfdda279;IngestionEndpoint=https://uksouth-1.in.applicationinsights.azure.com/;LiveEndpoint=https://uksouth.livediagnostics.monitor.azure.com/",
+                connectionString: "InstrumentationKey=238f9e91-9f42-4098-9b9a-513cfcb5c7fb;IngestionEndpoint=https://uksouth-1.in.applicationinsights.azure.com/;LiveEndpoint=https://uksouth.livediagnostics.monitor.azure.com/",
                 disableTelemetry: !ai_enabled,
                 enableCorsCorrelation: true,
                 enableRequestHeaderTracking: true,

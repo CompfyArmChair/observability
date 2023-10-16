@@ -3,16 +3,21 @@ version: '3.4'
 services:
   sql-server-db:
     image: mcr.microsoft.com/mssql/server:latest
+    container_name: SqlDB
     networks:
         - shared-network
 
   smtp4dev:
     image: rnwood/smtp4dev
+    container_name: Smtp
+    volumes:
+        - smtp4devvolume:/smtp4dev
     networks:
         - shared-network
 
   basketapi:
     image: ${DOCKER_REGISTRY-}basketapi
+    container_name: Basket
     build:
       context: .
       dockerfile: APIs/BasketApi/Dockerfile
@@ -23,6 +28,7 @@ services:
 
   billingapi:
     image: ${DOCKER_REGISTRY-}billingapi
+    container_name: Billing
     build:
       context: .
       dockerfile: APIs/BillingApi/Dockerfile
@@ -33,6 +39,7 @@ services:
 
   catalogueapi:
     image: ${DOCKER_REGISTRY-}catalogueapi
+    container_name: Catalogue
     build:
       context: .
       dockerfile: APIs/CatalogueApi/Dockerfile
@@ -43,6 +50,7 @@ services:
 
   emailapi:
     image: ${DOCKER_REGISTRY-}emailapi
+    container_name: Email
     build:
       context: .
       dockerfile: APIs/EmailApi/Dockerfile
@@ -53,6 +61,7 @@ services:
 
   orderapi:
     image: ${DOCKER_REGISTRY-}orderapi
+    container_name: Order
     build:
       context: .
       dockerfile: APIs/OrderApi/Dockerfile
@@ -63,6 +72,7 @@ services:
 
   salesapi:
     image: ${DOCKER_REGISTRY-}salesapi
+    container_name: Sales
     build:
       context: .
       dockerfile: APIs/SalesApi/Dockerfile
@@ -73,6 +83,7 @@ services:
 
   shippingapi:
     image: ${DOCKER_REGISTRY-}shippingapi
+    container_name: Shipping
     build:
       context: .
       dockerfile: APIs/ShippingApi/Dockerfile
@@ -83,6 +94,7 @@ services:
 
   warehouseapi:
     image: ${DOCKER_REGISTRY-}warehouseapi
+    container_name: Warehouse
     build:
       context: .
       dockerfile: APIs/WarehouseApi/Dockerfile
@@ -93,6 +105,7 @@ services:
 
   shopwebsite.server:
     image: ${DOCKER_REGISTRY-}shopwebsiteserver
+    container_name: ShopWebsite
     build:
       context: .
       dockerfile: websites/ShopWebsite/Dockerfile
@@ -101,6 +114,7 @@ services:
 
   stockmanagementwebsite.server:
     image: ${DOCKER_REGISTRY-}stockmanagementserver
+    container_name: StockManagementWebsite
     build:
       context: .
       dockerfile: websites/StockManagementWebsite/Dockerfile
@@ -110,6 +124,8 @@ services:
 volumes:
   sqlvolume:
     driver: local    
+  smtp4devvolume:
+    driver: local
 
 networks:
   shared-network:

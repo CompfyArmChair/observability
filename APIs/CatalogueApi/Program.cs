@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage;
 using Shared.Instrumentation;
 using Shared.Instrumentation.Metrics;
 using Shared.ServiceBus;
+using Shared.ServiceBus.Commands;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,15 +23,22 @@ builder.Services.AddMassTransit(config =>
 		builder.Configuration.GetConnectionString("ServiceBus")!));
 
 builder.Services.AddOpenTelemetry(
-	"CatalogueApi", 
+	"CatalogueApi",
 	builder.Configuration.GetConnectionString("ApplicationInsights")!,
-	new OtelMetricsConfiguration<OtelMeters>(new OtelMeters()));
+	new OtelMetricsConfiguration<OtelMeters>(new OtelMeters()))
+		.WithBaggage<AddNewCatalogueItemCommand>("shop.CatalogueApi.catalogueItem.sku", command => command.Sku.ToString())
+		.WithBaggage<DeleteCatalogueItemCommand>("shop.CatalogueApi.catalogueItem.sku", command => command.Sku.ToString())
+		.WithBaggage<EditCatalogueItemCommand>("shop.CatalogueApi.catalogueItem.sku", command => command.Sku.ToString());
 //builder.Services.AddSingleton<ITelemetryInitializer, TelemetryInitializer>();
 
 builder.Services.AddSwaggerDoc();
 builder.Services.AddFastEndpoints();
 
+builder.Services.AddHealthChecks();
+
 var app = builder.Build();
+
+app.MapHealthChecks("/health");
 
 using (var scope = app.Services.CreateScope())
 {

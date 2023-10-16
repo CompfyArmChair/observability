@@ -31,15 +31,19 @@ builder.Services.AddOpenTelemetry(
 	"OrderApi", 
 	builder.Configuration.GetConnectionString("ApplicationInsights")!,
 	new OtelMetricsConfiguration<OtelMeters>(new OtelMeters()))
-    .WithBaggage<SendMailCommand>("orderapi.mail.ref", command => command.Reference)
-    .WithBaggage<ReserveStockCommand>("orderapi.order.id", command => command.OrderId.ToString())
-    .WithBaggage<BillCustomerCommand>("orderapi.order.id", command => command.OrderId.ToString())
-    .WithBaggage<BillCustomerCommand>("orderapi.customer.ref", command => command.CustomerReference);
+    .WithBaggage<SendMailCommand>("shop.orderapi.mail.ref", command => command.Reference)
+    .WithBaggage<ReserveStockCommand>("shop.orderapi.order.id", command => command.OrderId.ToString())
+    .WithBaggage<BillCustomerCommand>("shop.orderapi.order.id", command => command.OrderId.ToString())
+    .WithBaggage<BillCustomerCommand>("shop.orderapi.customer.ref", command => command.CustomerReference);
 
 builder.Services.AddSwaggerDoc();
 builder.Services.AddFastEndpoints();
 
+builder.Services.AddHealthChecks();
+
 var app = builder.Build();
+
+app.MapHealthChecks("/health");
 
 using (var scope = app.Services.CreateScope())
 {

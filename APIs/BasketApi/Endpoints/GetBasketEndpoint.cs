@@ -4,6 +4,7 @@ using BasketApi.Data.Models;
 using BasketApi.Endpoints.Dtos;
 using BasketApi.Instrumentation;
 using Microsoft.EntityFrameworkCore;
+using Shared.Instrumentation;
 
 namespace BasketApi.Endpoints;
 
@@ -18,7 +19,7 @@ public class GetBasketEndpoint : Endpoint<GetBasketRequest, GetBasketResponse, G
 
     public override void Configure()
     {
-        Get("/Basket/{BasketId}");
+        Get("/v2/Basket/{BasketId}");
         AllowAnonymous();
     }
 
@@ -43,6 +44,7 @@ public class GetBasketEndpoint : Endpoint<GetBasketRequest, GetBasketResponse, G
 
         var response = Map.FromEntity(basket);
 
+        TelemetryBaggageHandler.AddBaggageFrom(response.Basket);
         await SendAsync(response);
     }
 }

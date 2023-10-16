@@ -17,7 +17,7 @@ public class GetAvailableProductsEndpoint : Endpoint<EmptyRequest, GetAvailableP
 
 	public override void Configure()
 	{
-		Get("/Stock/Products");
+		Get("/v2/Stock/Products");
 		AllowAnonymous();
 	}
 

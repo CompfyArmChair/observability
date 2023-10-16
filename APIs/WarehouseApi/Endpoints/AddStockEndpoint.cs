@@ -15,7 +15,7 @@ public class AddStockEndpoint : Endpoint<AddStockRequest, EmptyResponse, AddStoc
 
     public override void Configure()
     {
-        Post("/Stock/Products");
+        Post("/v2/Stock/Products");
         AllowAnonymous();
     }
 

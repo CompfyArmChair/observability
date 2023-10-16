@@ -24,15 +24,19 @@ namespace ShopWebsite
 
             builder.Services
                 .AddOpenTelemetry("ShopBFF", builder.Configuration.GetConnectionString("ApplicationInsights")!)
-                .WithBaggage<BasketDto>("shopwebsite.basket.id", basket => basket.Id.ToString())
-                .WithBaggage<BasketDto>("shopwebsite.basket.contents", basket => string.Join(',', basket.Products.Select(x => x.Name)))
-                .WithBaggage<ProductDto>("shopwebsite.product.name", product => product.Name)
-                .WithBaggage<ProductDto>("shopwebsite.product.quantity", product => product.Quantity.ToString())
-                .WithBaggage<ProductDto>("shopwebsite.product.sku", product => product.Sku);
+                .WithBaggage<BasketDto>("shop.website.basket.id", basket => basket.Id.ToString())
+                .WithBaggage<BasketDto>("shop.website.basket.contents", basket => string.Join(',', basket.Products.Select(x => x.Name)))
+                .WithBaggage<ProductDto>("shop.website.product.name", product => product.Name)
+                .WithBaggage<ProductDto>("shop.website.product.quantity", product => product.Quantity.ToString())
+                .WithBaggage<ProductDto>("shop.website.product.sku", product => product.Sku);
 
-            var app = builder.Build();            
+			builder.Services.AddHealthChecks();
 
-            if (app.Environment.IsDevelopment())
+			var app = builder.Build();
+
+			app.MapHealthChecks("/health");
+
+			if (app.Environment.IsDevelopment())
             {
                 app.UseWebAssemblyDebugging();
             }

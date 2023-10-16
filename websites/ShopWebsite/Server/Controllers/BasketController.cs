@@ -23,7 +23,7 @@ namespace ShopWebsite.Server.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<BasketDto>> Get([FromRoute] int id)
         {
-			var response = await _httpClient.GetAsync($"{_basketApiBaseUrl}/Basket/{id}");
+			var response = await _httpClient.GetAsync($"{_basketApiBaseUrl}/v2/Basket/{id}");
 			var basketResponse = await response.Content.ReadFromJsonAsync<GetBasketResponse>();            
 
             TelemetryBaggageHandler.AddBaggageFrom(basketResponse!.Basket);

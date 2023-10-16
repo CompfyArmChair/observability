@@ -13,7 +13,7 @@ public class RemoveFromBasketEndpoint : Endpoint<RemoveFromBasketRequest, EmptyR
 
     public override void Configure()
     {
-        Delete("/Basket/{BasketId}/Product/{Sku}");
+        Delete("/v2/Basket/{BasketId}/Product/{Sku}");
         AllowAnonymous();
     }
 

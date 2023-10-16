@@ -1,5 +1,6 @@
 global using FastEndpoints;
 using BasketApi.Data;
+using BasketApi.Endpoints.Dtos;
 using FastEndpoints.Swagger;
 using MassTransit;
 using Microsoft.Data.SqlClient;
@@ -26,15 +27,20 @@ builder.Services.AddMassTransit(config =>
 builder.Services.AddOpenTelemetry(
 	"BasketApi", 
 	builder.Configuration.GetConnectionString("ApplicationInsights")!,
-	new OtelMetricsConfiguration<OtelMeters>(new OtelMeters()));
-
+	new OtelMetricsConfiguration<OtelMeters>(new OtelMeters()))
+		.WithBaggage<BasketDto>("shop.basketapi.basket.id", basket => basket.Id.ToString())
+		.WithBaggage<BasketDto>("shop.basketapi.basket.contents",
+			basket => string.Join(',', basket.Products.Select(x => x.Sku)));
 //builder.Services.AddSingleton<ITelemetryInitializer, TelemetryInitializer>();
 
 builder.Services.AddSwaggerDoc();
 builder.Services.AddFastEndpoints();
 
+builder.Services.AddHealthChecks();
 
 var app = builder.Build();
+
+app.MapHealthChecks("/health");
 
 using (var scope = app.Services.CreateScope())
 {

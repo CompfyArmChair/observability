@@ -15,7 +15,7 @@ public class RemoveProductsEndpoint : Endpoint<RemoveProductsRequest, EmptyRespo
 
 	public override void Configure()
 	{
-		Post("/Price/Products/Command/RemoveProducts");
+		Post("/v2/Price/Products/Command/RemoveProducts");
 		AllowAnonymous();
 	}
 

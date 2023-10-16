@@ -16,7 +16,7 @@ public class AddProductsEndpoint : Endpoint<AddProductsRequest, EmptyResponse, A
 
     public override void Configure()
     {
-        Post("/Price/Products");
+        Post("/v2/Price/Products");
         AllowAnonymous();
     }
 

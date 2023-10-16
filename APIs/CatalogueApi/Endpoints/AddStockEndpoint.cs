@@ -15,7 +15,7 @@ public class AddSkuEndpoint : Endpoint<AddSkuRequest, EmptyResponse, AddSkuMappe
 
     public override void Configure()
     {
-        Post("/Sku");
+        Post("/v2/Sku");
         AllowAnonymous();
     }
 

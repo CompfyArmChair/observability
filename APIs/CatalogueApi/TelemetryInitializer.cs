@@ -1,16 +1,16 @@
-﻿using Microsoft.ApplicationInsights.Channel;
-using Microsoft.ApplicationInsights.Extensibility;
+﻿//using Microsoft.ApplicationInsights.Channel;
+//using Microsoft.ApplicationInsights.Extensibility;
 
-namespace CatalogueApi;
+//namespace CatalogueApi;
 
-public class TelemetryInitializer : ITelemetryInitializer
-{
-	public void Initialize(ITelemetry telemetry)
-	{
-		if (string.IsNullOrEmpty(telemetry.Context.Cloud.RoleName))
-		{			
-			telemetry.Context.Cloud.RoleName = "Catalogue Role Name";
-			telemetry.Context.Cloud.RoleInstance = "Catalogue Role Instance";
-		}
-	}
-}
+//public class TelemetryInitializer : ITelemetryInitializer
+//{
+//	public void Initialize(ITelemetry telemetry)
+//	{
+//		if (string.IsNullOrEmpty(telemetry.Context.Cloud.RoleName))
+//		{			
+//			telemetry.Context.Cloud.RoleName = "Catalogue Role Name";
+//			telemetry.Context.Cloud.RoleInstance = "Catalogue Role Instance";
+//		}
+//	}
+//}

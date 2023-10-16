@@ -15,7 +15,7 @@ public class EditCatalogueItemCommandConsumer : IConsumer<EditCatalogueItemComma
     {
         _dbContext = dbContext;
 		_meters = meters;
-	}
+    }
 
     public async Task Consume(ConsumeContext<EditCatalogueItemCommand> context)
     {

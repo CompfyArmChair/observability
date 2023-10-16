@@ -16,7 +16,7 @@ public class GetOrdersEndpoint : Endpoint<EmptyRequest, Response, OrdersMapper>
 
     public override void Configure()
     {
-        Get("/Orders");
+        Get("/v2/Orders");
         AllowAnonymous();
     }
 

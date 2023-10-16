@@ -9,8 +9,10 @@ using Shared.Instrumentation;
 using Shared.Instrumentation.MassTransit;
 using Shared.Instrumentation.Metrics;
 using Shared.ServiceBus;
+using Shared.ServiceBus.Commands;
 using WarehouseApi.Data;
 using WarehouseApi.Instrumentation;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,15 +26,23 @@ builder.Services.AddMassTransit(config =>
 		(context, configurator) => configurator.UseSendAndPublishFilter(typeof(TelemetrySendFilter<>), context)));
 
 builder.Services.AddOpenTelemetry(
-	"WarehouseApi", 
+	"WarehouseApi",
 	builder.Configuration.GetConnectionString("ApplicationInsights")!,
-	new OtelMetricsConfiguration<OtelMeters>(new OtelMeters()));
+	new OtelMetricsConfiguration<OtelMeters>(new OtelMeters()))
+		.WithBaggage<AddNewStockItemsCommand>("shop.WarehouseApi.stock.sku", command => command.Sku.ToString())		
+		.WithBaggage<DeleteStockItemCommand>("shop.WarehouseApi.stock.sku", command => command.Id.ToString())
+		.WithBaggage<ReserveStockCommand>("shop.WarehouseApi.stock.items",
+			command => string.Join(',', command.Stock.Select(x => x.Sku)));		
 //builder.Services.AddSingleton<ITelemetryInitializer, TelemetryInitializer>();
 
 builder.Services.AddSwaggerDoc();
 builder.Services.AddFastEndpoints();
 
+builder.Services.AddHealthChecks();
+
 var app = builder.Build();
+
+app.MapHealthChecks("/health");
 
 using (var scope = app.Services.CreateScope())
 {

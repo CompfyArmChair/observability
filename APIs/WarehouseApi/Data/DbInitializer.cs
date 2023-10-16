@@ -19,8 +19,10 @@ public static class DbInitializer
                 new StockEntity{Sku="com-tow",Status = Status.Available},
                 new StockEntity{Sku="com-cpu",Status = Status.Available},
                 new StockEntity{Sku="com-ram",Status = Status.Available},
-                new StockEntity{Sku="com-mot",Status = Status.Available}
-        };
+                new StockEntity{Sku="com-mot",Status = Status.Available},
+				new StockEntity{Sku="com-net",Status = Status.Available},
+				new StockEntity{Sku="com-pdp",Status = Status.Available}
+		};
 
         context.Stock.AddRange(stock);
         context.SaveChanges();

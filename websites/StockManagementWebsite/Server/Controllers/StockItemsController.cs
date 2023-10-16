@@ -1,5 +1,6 @@
 using MassTransit;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Instrumentation;
 using Shared.ServiceBus.Commands;
 using StockManagementWebsite.Shared.StockItems;
 
@@ -23,7 +24,9 @@ public class StockItemsController : ControllerBase
     [HttpGet("{sku}")]
     public async Task<ActionResult<IEnumerable<StockItemDto>>> Get([FromRoute] string sku)
     {
-        var result = await _httpClient.GetAsync($"{_warehouseApiBaseUrl}/Stock/{sku}");
+		TelemetryBaggageHandler.AddBaggage("stockmanagementwebsite.stock.sku", sku);
+		
+        var result = await _httpClient.GetAsync($"{_warehouseApiBaseUrl}/v2/Stock/{sku}");
         
         result.EnsureSuccessStatusCode();
         var warehouseProducts = await result.Content.ReadFromJsonAsync<StockResponse>() 
@@ -35,7 +38,9 @@ public class StockItemsController : ControllerBase
     [HttpPost]
     public async Task<ActionResult> Add([FromBody] AddStockItemsDto addStockItemsDto)
     {
-        var sendEndpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri("queue:warehouseApi"));
+		TelemetryBaggageHandler.AddBaggageFrom(addStockItemsDto);
+
+		var sendEndpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri("queue:warehouseApi"));
 
         await sendEndpoint.Send(new AddNewStockItemsCommand()
         {
@@ -51,7 +56,9 @@ public class StockItemsController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<ActionResult> Delete([FromRoute] int id)
     {
-        var sendEndpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri("queue:warehouseApi"));
+		TelemetryBaggageHandler.AddBaggage("stockmanagementwebsite.stock.id", id);
+
+		var sendEndpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri("queue:warehouseApi"));
 
         await sendEndpoint.Send(new DeleteStockItemCommand() { Id = id });
             

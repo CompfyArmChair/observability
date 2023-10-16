@@ -33,7 +33,11 @@ builder.Services.AddOpenTelemetry(
 builder.Services.AddSwaggerDoc();
 builder.Services.AddFastEndpoints();
 
+builder.Services.AddHealthChecks();
+
 var app = builder.Build();
+
+app.MapHealthChecks("/health");
 
 using (var scope = app.Services.CreateScope())
 {

@@ -28,5 +28,5 @@ public class EditSaleItemCommandConsumer : IConsumer<EditSaleItemCommand>
         await _dbContext.SaveChangesAsync();
         _meters.UpdatePrice();
 
-	}
+    }
 }

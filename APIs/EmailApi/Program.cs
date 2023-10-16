@@ -16,6 +16,10 @@ builder.Services.AddOpenTelemetry(
 	new OtelMetricsConfiguration<OtelMeters>(new OtelMeters()));
 //builder.Services.AddSingleton<ITelemetryInitializer, TelemetryInitializer>();
 
+builder.Services.AddHealthChecks();
+
 var app = builder.Build();
+
+app.MapHealthChecks("/health");
 
 app.Run();

@@ -16,7 +16,7 @@ public class AddToBasketEndpoint : Endpoint<AddToBasketRequest, EmptyResponse, A
 
     public override void Configure()
     {
-        Post("/Basket/{BasketId}/Product");
+        Post("/v2/Basket/{BasketId}/Product");
         AllowAnonymous();
     }
 

@@ -51,6 +51,9 @@ public class MakePurchaseCommandConsumer : IConsumer<MakePurchaseCommand>
 		_meters.IncreaseOrders();
 		_meters.RecordNumberOfProducts(newPurchase.ProductEntities.Count());
 
+		if (context.Message.Basket.Products.Any(x => x.Sku == "com-pdp"))
+			await Task.Delay(6000);
+
 		await Task.WhenAll(
 			context.Send(new Uri("queue:EmailApi"), new SendMailCommand() 
 			{ 

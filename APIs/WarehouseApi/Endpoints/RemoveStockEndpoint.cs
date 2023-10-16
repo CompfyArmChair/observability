@@ -16,7 +16,7 @@ public class RemoveStockEndpoint : Endpoint<RemoveStockRequest, EmptyResponse>
 
     public override void Configure()
     {
-        Post("/Stock/Command/RemoveStock");
+        Post("/v2/Stock/Command/RemoveStock");
         AllowAnonymous();
     }
 

@@ -1,5 +1,6 @@
 using MassTransit;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Instrumentation;
 using Shared.ServiceBus.Commands;
 using StockManagementWebsite.Shared;
 using StockManagementWebsite.Shared.StockCategories;
@@ -26,9 +27,9 @@ public class StockCategoriesController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<StockCategoryDto>>> Get()
     {
-        var catalogueProductTask = _httpClient.GetAsync($"{_catalogueApiBaseUrl}/Catalogue/Products");
-        var salesProductTask = _httpClient.GetAsync($"{_salesApiBaseUrl}/Price/Products");
-        var warehouseProductTask = _httpClient.GetAsync($"{_warehouseApiBaseUrl}/Stock/Products");
+        var catalogueProductTask = _httpClient.GetAsync($"{_catalogueApiBaseUrl}/v2/Catalogue/Products");
+        var salesProductTask = _httpClient.GetAsync($"{_salesApiBaseUrl}/v2/Price/Products");
+        var warehouseProductTask = _httpClient.GetAsync($"{_warehouseApiBaseUrl}/v2/Stock/Products");
 
         var results = await Task.WhenAll(catalogueProductTask, salesProductTask, warehouseProductTask);
 
@@ -66,12 +67,17 @@ public class StockCategoriesController : ControllerBase
                 composedStockCategories.Add(composedProduct);
             }
         }
-        return composedStockCategories;
+
+		TelemetryBaggageHandler.AddBaggage("stockmanagementwebsite.categories.count", composedStockCategories.Count);
+
+		return composedStockCategories;
     }
 
     [HttpPost]
     public async Task<ActionResult> Add([FromBody] AddStockCategoryDto addStockCategoryDto)
-    {
+    {		
+		TelemetryBaggageHandler.AddBaggageFrom(addStockCategoryDto);
+		
         var sendCatalogueApiEndpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri("queue:catalogueApi"));
         var sendSaleApiEndpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri("queue:saleApi"));
 
@@ -93,7 +99,9 @@ public class StockCategoriesController : ControllerBase
     [HttpPut]
     public async Task<ActionResult> Edit([FromBody] EditStockCategoryDto editStockCategoryDto)
     {
-        var sendCatalogueApiEndpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri("queue:catalogueApi"));
+		TelemetryBaggageHandler.AddBaggageFrom(editStockCategoryDto);
+
+		var sendCatalogueApiEndpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri("queue:catalogueApi"));
         var sendSaleApiEndpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri("queue:saleApi"));
 
         await Task.WhenAll(
@@ -114,7 +122,9 @@ public class StockCategoriesController : ControllerBase
     [HttpDelete("{Sku}")]
     public async Task<ActionResult> Delete([FromRoute] string sku)
     {
-        var sendCatalogueApiEndpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri("queue:catalogueApi"));
+		TelemetryBaggageHandler.AddBaggage("stockmanagementwebsite.category.sku", sku.ToString());
+
+		var sendCatalogueApiEndpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri("queue:catalogueApi"));
         var sendSaleApiEndpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri("queue:saleApi"));
         
         await Task.WhenAll(

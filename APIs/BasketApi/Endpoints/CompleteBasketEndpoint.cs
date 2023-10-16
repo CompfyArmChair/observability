@@ -18,7 +18,7 @@ public class CompleteBasketEndpoint : Endpoint<CompleteBasketRequest, EmptyRespo
 
     public override void Configure()
     {
-        Get("/Basket/{BasketId}/Command/Complete");
+        Get("/v2/Basket/{BasketId}/Command/Complete");
         AllowAnonymous();
     }
 

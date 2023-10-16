@@ -15,7 +15,7 @@ public class OrderSkuEndpoint : Endpoint<OrderSkuRequest, EmptyResponse>
 
     public override void Configure()
     {
-        Post("/Sku/Command/OrderSku");
+        Post("/v2/Sku/Command/OrderSku");
         AllowAnonymous();
     }
 

@@ -16,7 +16,7 @@ public class GetPurchasesEndpoint : Endpoint<EmptyRequest, GetPurchasesResponse,
 
     public override void Configure()
     {
-        Get("/Purchases");
+        Get("/v2/Purchases");
         AllowAnonymous();
     }
 

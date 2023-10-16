@@ -15,7 +15,7 @@ public class MakePurchaseEndpoint : Endpoint<MakePurchaseRequest, EmptyResponse,
 
     public override void Configure()
     {
-        Post("/Purchases");
+        Post("/v2/Purchases");
         AllowAnonymous();
     }
 

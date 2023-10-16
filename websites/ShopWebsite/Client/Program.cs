@@ -1,8 +1,8 @@
+using Blazor.WebAssembly.Telemetry;
 using Fluxor;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using MudBlazor.Services;
-using Blazor.WebAssembly.Telemetry;
 using System.Runtime.Versioning;
 
 [assembly: SupportedOSPlatform("browser")]
@@ -27,7 +27,6 @@ public class Program
         {
             options.ScanAssemblies(currentAssembly);
 			options.UseReduxDevTools();
-
 		});
 
         await builder.Build().RunAsync();

@@ -15,7 +15,7 @@ public class RemoveSkuEndpoint : Endpoint<RemoveSkuRequest, EmptyResponse>
 
     public override void Configure()
     {
-        Post("/Sku/Command/RemoveSku");
+        Post("/v2/Sku/Command/RemoveSku");
         AllowAnonymous();
     }
 

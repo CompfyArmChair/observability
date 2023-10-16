@@ -18,8 +18,10 @@ public static class DbInitializer
             new CatalogueEntity{Sku="com-tow",Name="Tower"},
             new CatalogueEntity{Sku="com-cpu",Name="CPU"},
             new CatalogueEntity{Sku="com-ram",Name="RAM"},
-            new CatalogueEntity{Sku="com-mot",Name="Motherboard"}
-        };
+            new CatalogueEntity{Sku="com-mot",Name="Motherboard"},
+			new CatalogueEntity{Sku="com-net",Name="Netscape Navigator Bundle"},
+			new CatalogueEntity{Sku="com-pdp",Name="PDP-11"},
+		};
 
         context.Catalogue.AddRange(catalogue);
 

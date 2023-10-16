@@ -16,7 +16,7 @@ public class GetAllShippingEndpoint : Endpoint<EmptyRequest, Response, ShippingM
 
     public override void Configure()
     {
-        Get("/Shippings");
+        Get("/v2/Shippings");
         AllowAnonymous();
     }
 

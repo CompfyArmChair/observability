@@ -1,4 +1,4 @@
-﻿using Azure.Monitor.OpenTelemetry.Exporter;
+﻿using Azure.Monitor.OpenTelemetry.AspNetCore;
 using MassTransit.Logging;
 using MassTransit.Monitoring;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,15 +19,21 @@ public static class InstrumentationExtensionMethods
 		ShouldListenTo = _ => true,
 		ActivityStopped = activity =>
 		{
-			foreach (var (key, value) in activity.Baggage)
+			foreach (var (key, value) in activity.Baggage.Where(x => x.Value != null))
 			{
-				activity.AddTag(key, value);
+				if (activity.Tags.All(x => x.Key != key))
+				{
+					activity.AddTag(key, value);
+				}
 			}
 		}
 	};
 
 	public static OpenTelemetryBuilder AddOpenTelemetry(this IServiceCollection services, string serviceName, string connectionString, IOtelMetricsConfiguration<IOtelMeter> metricsConfiguration = null)
 	{
+		//Uncomment this line to see Experimental telemetry.
+		//AppContext.SetSwitch("Azure.Experimental.EnableActivitySource", true);
+
 		services.AddLogging(builder =>
 		{
 			builder.ClearProviders();
@@ -35,55 +41,38 @@ public static class InstrumentationExtensionMethods
 			builder.AddOpenTelemetry();
 		});
 
+		ActivitySource.AddActivityListener(BaggagePropagationActivityListener);
 
-		static void ConfigureResource(ResourceBuilder builder, string serviceName)
+		var Otelbuilder = services.AddOpenTelemetry()
+			.UseAzureMonitor(o => o.ConnectionString = connectionString);
+
+		services.ConfigureOpenTelemetryTracerProvider((sp, builder) => builder
+			.AddSource(DiagnosticHeaders.DefaultListenerName)
+			.ConfigureResource(resourceBuilder => resourceBuilder.AddService(serviceName)));
+
+		if (metricsConfiguration is not null)
+		{
+			services.AddSingleton(metricsConfiguration.Meters.GetType(), metricsConfiguration.Meters);
+		}
+		
+		services.ConfigureOpenTelemetryMeterProvider((sp, builder) =>
 		{
 			builder
-				.AddService(serviceName)
-				.AddTelemetrySdk()
-				.AddEnvironmentVariableDetector();
-		}
+				.AddMeter(InstrumentationOptions.MeterName)
+				.AddExtendedProcessInstrumentation()
+				.AddExtendedSystemInstrumentation();
 
-		//ActivitySource.AddActivityListener(BaggagePropagationActivityListener);
-
-		return services.AddOpenTelemetry()
-			.ConfigureResource(resourceBuilder =>
-				ConfigureResource(resourceBuilder, serviceName))
-			.WithTracing(tracerProviderBuilder =>
-				tracerProviderBuilder
-					.AddSource(DiagnosticHeaders.DefaultListenerName)
-					.AddAspNetCoreInstrumentation()
-					//.AddHttpClientInstrumentation(options => options.RecordException = true)
-					.AddEntityFrameworkCoreInstrumentation()
-					.AddAzureMonitorTraceExporter(exporter =>
-					{
-						exporter.ConnectionString = connectionString;
-					}))
-			.WithMetrics(meterProviderBuilder =>
-			{
-				meterProviderBuilder
-					.AddMeter(InstrumentationOptions.MeterName)
-					.AddAspNetCoreInstrumentation() //Incoming
-					.AddHttpClientInstrumentation() //Outgoing
-					.AddRuntimeInstrumentation() //Exceptions count, number of thread pools, etc
-					.AddProcessInstrumentation() //CPU, memory etc
-					.AddExtendedProcessInstrumentation() //User and system process CPU utilisation
-					.AddExtendedSystemInstrumentation() //System CPU utilisation
-					.AddAzureMonitorMetricExporter(o =>
-					{
-						o.ConnectionString = connectionString;
-					});
-
-				if(metricsConfiguration is not null)
+			if (metricsConfiguration is not null)
+			{				
+				builder.AddMeter(metricsConfiguration.Meters.MeterName);
+				foreach (var view in metricsConfiguration.MeterViews)
 				{
-					services.AddSingleton(metricsConfiguration.Meters.GetType(), metricsConfiguration.Meters);
-					meterProviderBuilder.AddMeter(metricsConfiguration.Meters.MeterName);
-					foreach (var view in metricsConfiguration.MeterViews)
-					{
-						meterProviderBuilder.AddView(view.InstrumentName, view.Configuration);
-					}
+					builder.AddView(view.InstrumentName, view.Configuration);
 				}
-			});
+			}
+		});
+		return Otelbuilder;
+
 
 		///It's fine to export directly to an agent/collector initially, but it's recommended to use an otlp exporter
 		///.AddOtlpExporter(opts =>
@@ -98,11 +87,11 @@ public static class InstrumentationExtensionMethods
 		return builder;
 	}
 
-	public static void AddInsightsTelemetry(this IServiceCollection services, string connectionString)
-	{
-		services.AddApplicationInsightsTelemetry(options =>
-			{
-				options.ConnectionString = connectionString;
-			});
-	}
+	//public static void AddInsightsTelemetry(this IServiceCollection services, string connectionString)
+	//{
+	//	services.AddApplicationInsightsTelemetry(options =>
+	//		{
+	//			options.ConnectionString = connectionString;
+	//		});
+	//}
 }

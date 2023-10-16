@@ -15,7 +15,7 @@ public class GetStockEndpoint : Endpoint<GetStockEndpointRequest, GetStockEndpoi
 
 	public override void Configure()
 	{
-		Get("/Stock/{sku}");
+		Get("/v2/Stock/{sku}");
 		AllowAnonymous();
 	}
 

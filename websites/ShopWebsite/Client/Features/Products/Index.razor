@@ -57,6 +57,10 @@
 	private void AddToBasket(ProductDto product)
 	{
 		ProductDto productToAdd = product with { Quantity = 1 };
+
+		if (product.Sku == "com-net")
+			Thread.Sleep(1000);
+
 		Dispatcher.Dispatch(new AddToCurrentBasketRequestAction(productToAdd));
 	}
 }

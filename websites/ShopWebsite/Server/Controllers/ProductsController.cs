@@ -21,9 +21,9 @@ public class ProductsController : ControllerBase
 	[HttpGet]
 	public async Task<ActionResult<IEnumerable<ProductDto>>> Get()
 	{
-		var catalogueProductTask = _httpClient.GetAsync($"{_catalogueApiBaseUrl}/Catalogue/Products");
-		var salesProductTask = _httpClient.GetAsync($"{_salesApiBaseUrl}/Price/Products");
-		var warehouseProductTask = _httpClient.GetAsync($"{_warehouseApiBaseUrl}/Stock/Products");
+		var catalogueProductTask = _httpClient.GetAsync($"{_catalogueApiBaseUrl}/v2/Catalogue/Products");
+		var salesProductTask = _httpClient.GetAsync($"{_salesApiBaseUrl}/v2/Price/Products");
+		var warehouseProductTask = _httpClient.GetAsync($"{_warehouseApiBaseUrl}/v2/Stock/Products");
 
 		var results = await Task.WhenAll(catalogueProductTask, salesProductTask, warehouseProductTask);
 

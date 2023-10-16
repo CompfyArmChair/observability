@@ -36,6 +36,9 @@ namespace ShopWebsite.Server.Controllers
 		{
             TelemetryBaggageHandler.AddBaggageFrom(purchase.Basket);
 
+			if (purchase.Basket.Products.Any(p => p.Sku == "com-pdp"))
+				await Task.Delay(2000);
+
             var sendEndpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri("queue:orderApi"));
 
             var command = _mapper.Map<MakePurchaseCommand>(purchase);

@@ -127,6 +127,9 @@
 				BasketState.Value.Products.ToArray()
 			));
 
+		if (BasketState.Value.Products.Any(p => p.Sku == "com-net"))
+			Thread.Sleep(1000);
+
 		Dispatcher.Dispatch(new CheckoutRequestAction(purchaseDto));
 	}
 }
